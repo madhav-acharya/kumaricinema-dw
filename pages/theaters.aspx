@@ -1,0 +1,148 @@
+<%@ Page Title="Theaters" Language="C#" MasterPageFile="~/pages/Admin.Master" AutoEventWireup="true" CodeFile="theaters.aspx.cs" Inherits="KumariCinema.Admin.theaters" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+</asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div class="page-title d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-building"></i> Theaters</h2>
+        <button type="button" class="btn btn-custom btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addTheaterModal">
+            <i class="fas fa-plus"></i> Add Theater
+        </button>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search theaters...">
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Theater ID</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <asp:Repeater ID="theatersRepeater" runat="server">
+                        <ItemTemplate>
+                            <tr>
+                                <td><%# Eval("TheaterId") %></td>
+                                <td><%# Eval("Name") %></td>
+                                <td><%# Eval("Location") %></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editTheaterModal" onclick="editTheater('<%# Eval("TheaterId") %>', '<%# Eval("Name") %>', '<%# Eval("Location") %>')">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteTheater('<%# Eval("TheaterId") %>')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ItemTemplate>
+                    </asp:Repeater>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addTheaterModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Theater</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Theater ID</label>
+                        <asp:TextBox ID="theaterIdInput" runat="server" CssClass="form-control" placeholder="THTR001"></asp:TextBox>
+                        <asp:RequiredFieldValidator ControlToValidate="theaterIdInput" ErrorMessage="Theater ID is required" CssClass="text-danger" Display="Dynamic"></asp:RequiredFieldValidator>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Theater Name</label>
+                        <asp:TextBox ID="theaterNameInput" runat="server" CssClass="form-control" placeholder="Enter theater name"></asp:TextBox>
+                        <asp:RequiredFieldValidator ControlToValidate="theaterNameInput" ErrorMessage="Theater name is required" CssClass="text-danger" Display="Dynamic"></asp:RequiredFieldValidator>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <asp:TextBox ID="locationInput" runat="server" CssClass="form-control" placeholder="Enter location"></asp:TextBox>
+                        <asp:RequiredFieldValidator ControlToValidate="locationInput" ErrorMessage="Location is required" CssClass="text-danger" Display="Dynamic"></asp:RequiredFieldValidator>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <asp:Button ID="saveTheaterButton" runat="server" Text="Save Theater" CssClass="btn btn-primary-custom" OnClick="SaveTheater_Click" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editTheaterModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Theater</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <asp:HiddenField ID="editTheaterIdField" runat="server" />
+                    <div class="mb-3">
+                        <label class="form-label">Theater ID</label>
+                        <asp:TextBox ID="editTheaterIdInput" runat="server" CssClass="form-control" ReadOnly="true"></asp:TextBox>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Theater Name</label>
+                        <asp:TextBox ID="editTheaterNameInput" runat="server" CssClass="form-control"></asp:TextBox>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <asp:TextBox ID="editLocationInput" runat="server" CssClass="form-control"></asp:TextBox>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <asp:Button ID="updateTheaterButton" runat="server" Text="Update Theater" CssClass="btn btn-primary-custom" OnClick="UpdateTheater_Click" />
+                </div>
+            </div>
+        </div>
+    </div>
+</asp:Content>
+
+<asp:Content ID="Content3" ContentPlaceHolderID="scripts" runat="server">
+    <script>
+        function editTheater(theaterId, name, location) {
+            document.getElementById('<%= editTheaterIdInput.ClientID %>').value = theaterId;
+            document.getElementById('<%= editTheaterNameInput.ClientID %>').value = name;
+            document.getElementById('<%= editLocationInput.ClientID %>').value = location;
+            document.getElementById('<%= editTheaterIdField.ClientID %>').value = theaterId;
+        }
+
+        function deleteTheater(theaterId) {
+            if (confirm('Are you sure you want to delete this theater?')) {
+                const form = document.getElementById('<%= this.ClientID %>');
+                const deleteField = document.createElement('input');
+                deleteField.type = 'hidden';
+                deleteField.name = 'deleteTheaterId';
+                deleteField.value = theaterId;
+                form.appendChild(deleteField);
+                form.submit();
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('keyup', function () {
+            const searchValue = this.value.toLowerCase();
+            document.querySelectorAll('table tbody tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        });
+
+        setActiveLink('theatersLink');
+    </script>
+</asp:Content>
