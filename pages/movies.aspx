@@ -1,0 +1,190 @@
+<%@ Page Title="Movies" Language="C#" MasterPageFile="~/pages/Admin.Master" AutoEventWireup="true" CodeFile="movies.aspx.cs" Inherits="KumariCinema.Admin.movies" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <style>
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+    </style>
+</asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div class="page-title d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-film"></i> Movies</h2>
+        <button type="button" class="btn btn-custom btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addMovieModal">
+            <i class="fas fa-plus"></i> Add Movie
+        </button>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search movies...">
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Duration</th>
+                        <th>Format</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <asp:Repeater ID="moviesRepeater" runat="server">
+                        <ItemTemplate>
+                            <tr>
+                                <td><%# Eval("MovieId") %></td>
+                                <td><%# Eval("Name") %></td>
+                                <td><%# Eval("DurationMinutes") %> mins</td>
+                                <td>
+                                    <span class="badge bg-info"><%# Eval("ViewingFormat") %></span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editMovieModal" onclick="editMovie('<%# Eval("MovieId") %>', '<%# Eval("Name") %>', <%# Eval("DurationMinutes") %>, '<%# Eval("ViewingFormat") %>')">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteMovie('<%# Eval("MovieId") %>')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ItemTemplate>
+                    </asp:Repeater>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addMovieModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Movie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <asp:HiddenField ID="movieIdField" runat="server" />
+                    <div class="mb-3">
+                        <label class="form-label">Movie ID</label>
+                        <asp:TextBox ID="movieIdInput" runat="server" CssClass="form-control" placeholder="MOV001"></asp:TextBox>
+                        <asp:RequiredFieldValidator ControlToValidate="movieIdInput" ErrorMessage="Movie ID is required" CssClass="text-danger" Display="Dynamic"></asp:RequiredFieldValidator>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Movie Name</label>
+                        <asp:TextBox ID="movieNameInput" runat="server" CssClass="form-control" placeholder="Enter movie name"></asp:TextBox>
+                        <asp:RequiredFieldValidator ControlToValidate="movieNameInput" ErrorMessage="Movie name is required" CssClass="text-danger" Display="Dynamic"></asp:RequiredFieldValidator>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Duration (minutes)</label>
+                        <asp:TextBox ID="durationInput" runat="server" CssClass="form-control" placeholder="120" TextMode="Number"></asp:TextBox>
+                        <asp:RequiredFieldValidator ControlToValidate="durationInput" ErrorMessage="Duration is required" CssClass="text-danger" Display="Dynamic"></asp:RequiredFieldValidator>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Viewing Format</label>
+                        <asp:DropDownList ID="formatDropdown" runat="server" CssClass="form-select">
+                            <asp:ListItem Value="">Select Format</asp:ListItem>
+                            <asp:ListItem Value="2D">2D</asp:ListItem>
+                            <asp:ListItem Value="3D">3D</asp:ListItem>
+                            <asp:ListItem Value="IMAX">IMAX</asp:ListItem>
+                            <asp:ListItem Value="4DX">4DX</asp:ListItem>
+                        </asp:DropDownList>
+                        <asp:RequiredFieldValidator ControlToValidate="formatDropdown" ErrorMessage="Format is required" CssClass="text-danger" Display="Dynamic"></asp:RequiredFieldValidator>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <asp:Button ID="saveMovieButton" runat="server" Text="Save Movie" CssClass="btn btn-primary-custom" OnClick="SaveMovie_Click" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editMovieModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Movie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <asp:HiddenField ID="editMovieIdField" runat="server" />
+                    <div class="mb-3">
+                        <label class="form-label">Movie ID</label>
+                        <asp:TextBox ID="editMovieIdInput" runat="server" CssClass="form-control" ReadOnly="true"></asp:TextBox>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Movie Name</label>
+                        <asp:TextBox ID="editMovieNameInput" runat="server" CssClass="form-control"></asp:TextBox>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Duration (minutes)</label>
+                        <asp:TextBox ID="editDurationInput" runat="server" CssClass="form-control" TextMode="Number"></asp:TextBox>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Viewing Format</label>
+                        <asp:DropDownList ID="editFormatDropdown" runat="server" CssClass="form-select">
+                            <asp:ListItem Value="">Select Format</asp:ListItem>
+                            <asp:ListItem Value="2D">2D</asp:ListItem>
+                            <asp:ListItem Value="3D">3D</asp:ListItem>
+                            <asp:ListItem Value="IMAX">IMAX</asp:ListItem>
+                            <asp:ListItem Value="4DX">4DX</asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <asp:Button ID="updateMovieButton" runat="server" Text="Update Movie" CssClass="btn btn-primary-custom" OnClick="UpdateMovie_Click" />
+                </div>
+            </div>
+        </div>
+    </div>
+</asp:Content>
+
+<asp:Content ID="Content3" ContentPlaceHolderID="scripts" runat="server">
+    <script>
+        function editMovie(movieId, name, duration, format) {
+            document.getElementById('<%= editMovieIdInput.ClientID %>').value = movieId;
+            document.getElementById('<%= editMovieNameInput.ClientID %>').value = name;
+            document.getElementById('<%= editDurationInput.ClientID %>').value = duration;
+            document.getElementById('<%= editFormatDropdown.ClientID %>').value = format;
+            document.getElementById('<%= editMovieIdField.ClientID %>').value = movieId;
+        }
+
+        function deleteMovie(movieId) {
+            if (confirm('Are you sure you want to delete this movie?')) {
+                const form = document.getElementById('<%= this.ClientID %>');
+                const deleteField = document.createElement('input');
+                deleteField.type = 'hidden';
+                deleteField.name = 'deleteMovieId';
+                deleteField.value = movieId;
+                form.appendChild(deleteField);
+                form.submit();
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('keyup', function () {
+            const searchValue = this.value.toLowerCase();
+            document.querySelectorAll('table tbody tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        });
+
+        setActiveLink('moviesLink');
+    </script>
+</asp:Content>
