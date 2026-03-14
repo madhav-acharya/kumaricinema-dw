@@ -1,0 +1,310 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Admin.Master.cs" Inherits="KumariCinema.Admin.Admin" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cinema Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding-top: 20px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar .logo {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar .logo h4 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin: 0;
+        }
+
+        .sidebar ul li a {
+            display: block;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: #fff;
+            color: white;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding-top: 60px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 250px;
+            right: 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+        }
+
+        .navbar .navbar-brand {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: #333 !important;
+            margin: 0 10px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #667eea !important;
+        }
+
+        .content-area {
+            padding: 30px;
+            min-height: calc(100vh - 60px);
+        }
+
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            margin-bottom: 30px;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .btn-custom {
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table th {
+            font-weight: 700;
+            color: #667eea;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-custom {
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .toast {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .toast.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .toast.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .toast.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .navbar {
+                left: 0;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+        }
+    </style>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="sidebar">
+            <div class="logo">
+                <h4><i class="fas fa-film"></i> Kumari</h4>
+                <small>Cinema Admin</small>
+            </div>
+            <ul>
+                <li><a href="dashboard.aspx" id="dashboardLink"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="users.aspx" id="usersLink"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="theaters.aspx" id="theatersLink"><i class="fas fa-building"></i> Theaters</a></li>
+                <li><a href="movies.aspx" id="moviesLink"><i class="fas fa-film"></i> Movies</a></li>
+                <li><a href="genres.aspx" id="genresLink"><i class="fas fa-tag"></i> Genres</a></li>
+                <li><a href="languages.aspx" id="languagesLink"><i class="fas fa-language"></i> Languages</a></li>
+                <li><a href="seattypes.aspx" id="seatTypesLink"><i class="fas fa-chair"></i> Seat Types</a></li>
+                <li><a href="seats.aspx" id="seatsLink"><i class="fas fa-couch"></i> Seats</a></li>
+                <li><a href="halls.aspx" id="hallsLink"><i class="fas fa-door-open"></i> Halls</a></li>
+                <li><a href="shows.aspx" id="showsLink"><i class="fas fa-clock"></i> Shows</a></li>
+                <li><a href="bookings.aspx" id="bookingsLink"><i class="fas fa-ticket-alt"></i> Bookings</a></li>
+                <li><a href="payments.aspx" id="paymentsLink"><i class="fas fa-credit-card"></i> Payments</a></li>
+                <li><a href="../components/logout.aspx" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid">
+                <span class="navbar-brand">Admin Panel</span>
+                <div class="d-flex align-items-center ms-auto">
+                    <div class="dropdown">
+                        <button class="btn btn-link dropdown-toggle text-dark" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> <asp:Label ID="userNameLabel" runat="server" Text="Admin"></asp:Label>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="profile.aspx">Profile</a></li>
+                            <li><a class="dropdown-item" href="changepassword.aspx">Change Password</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="../components/logout.aspx">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <div class="content-area">
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                </asp:ContentPlaceHolder>
+            </div>
+        </div>
+
+        <div id="toastContainer" class="toast-container"></div>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function showToast(message, type) {
+            type = type || 'info';
+            const toastHtml = `
+                <div class="toast ${type} show" role="alert">
+                    <div class="d-flex align-items-center p-3">
+                        <span class="flex-grow-1">${message}</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>`;
+
+            const container = document.getElementById('toastContainer');
+            const toastEl = document.createElement('div');
+            toastEl.innerHTML = toastHtml;
+            container.appendChild(toastEl);
+
+            setTimeout(() => {
+                toastEl.remove();
+            }, 3000);
+        }
+
+        function setActiveLink(linkId) {
+            document.querySelectorAll('.sidebar a').forEach(el => el.classList.remove('active'));
+            const link = document.getElementById(linkId);
+            if (link) link.classList.add('active');
+        }
+    </script>
+    <asp:ContentPlaceHolder ID="scripts" runat="server"></asp:ContentPlaceHolder>
+</body>
+</html>
