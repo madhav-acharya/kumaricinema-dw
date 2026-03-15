@@ -70,7 +70,6 @@ namespace KumariCinema.Admin
 
                 Movie movie = new Movie
                 {
-                    MovieId = movieIdInput.Text,
                     Name = movieNameInput.Text,
                     DurationMinutes = int.Parse(durationInput.Text),
                     ViewingFormat = formatDropdown.SelectedValue
