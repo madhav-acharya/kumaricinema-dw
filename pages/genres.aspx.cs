@@ -47,7 +47,6 @@ namespace KumariCinema.Admin
                 _genreRepository = new GenreRepository();
                 var genre = new Genre
                 {
-                    GenreId = genreIdInput.Text,
                     Name = nameInput.Text,
                     Description = descriptionInput.InnerText
                 };
