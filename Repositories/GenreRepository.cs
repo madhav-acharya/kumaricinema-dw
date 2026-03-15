@@ -88,12 +88,11 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "INSERT INTO genre (genre_id, name, description) VALUES (:id, :name, :description)";
+                    string query = "INSERT INTO genre (name, description) VALUES (:name, :description)";
                     using (var command = new OracleCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue(":id", entity.GenreId);
                         command.Parameters.AddWithValue(":name", entity.Name);
-                        command.Parameters.AddWithValue(":description", entity.Description ?? "");
+                        command.Parameters.AddWithValue(":description", entity.Description ?? string.Empty);
                         return command.ExecuteNonQuery() > 0;
                     }
                 }
