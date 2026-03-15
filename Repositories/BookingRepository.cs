@@ -90,10 +90,9 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "INSERT INTO booking (booking_id, total_amount, user_id, show_id) VALUES (:id, :amount, :userId, :showId)";
+                    string query = "INSERT INTO booking (total_amount, user_id, show_id) VALUES (:amount, :userId, :showId)";
                     using (var command = new OracleCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue(":id", entity.BookingId);
                         command.Parameters.AddWithValue(":amount", entity.TotalAmount);
                         command.Parameters.AddWithValue(":userId", entity.UserId);
                         command.Parameters.AddWithValue(":showId", entity.ShowId);
