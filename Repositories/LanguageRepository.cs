@@ -88,10 +88,9 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "INSERT INTO language (language_id, name, code) VALUES (:id, :name, :code)";
+                    string query = "INSERT INTO language (name, code) VALUES (:name, :code)";
                     using (var command = new OracleCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue(":id", entity.LanguageId);
                         command.Parameters.AddWithValue(":name", entity.Name);
                         command.Parameters.AddWithValue(":code", entity.Code);
                         return command.ExecuteNonQuery() > 0;
