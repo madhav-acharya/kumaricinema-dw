@@ -82,7 +82,6 @@ namespace KumariCinema.Admin {
                     : currentUser.TheaterId;
 
                 var hall = new Hall {
-                    HallId = hallIdInput.Text.Trim(),
                     HallName = hallNameInput.Text.Trim(),
                     Capacity = int.TryParse(capacityInput.Text, out int capacity) ? capacity : 0,
                     ScreenType = screenTypeDropdown.SelectedValue,
