@@ -42,7 +42,7 @@ namespace KumariCinema.Admin
             try
             {
                 _repo = new LanguageRepository();
-                if (_repo.Insert(new Language { LanguageId = idInput.Text, Name = nameInput.Text, Code = codeInput.Text }))
+                if (_repo.Insert(new Language { Name = nameInput.Text, Code = codeInput.Text }))
                 {
                     idInput.Text = nameInput.Text = codeInput.Text = "";
                     Load();
