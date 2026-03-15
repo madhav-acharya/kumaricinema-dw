@@ -70,7 +70,6 @@ namespace KumariCinema.Admin
 
                 Theater theater = new Theater
                 {
-                    TheaterId = theaterIdInput.Text,
                     Name = theaterNameInput.Text,
                     Location = locationInput.Text
                 };
