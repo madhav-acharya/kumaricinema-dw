@@ -94,10 +94,9 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "INSERT INTO app_user (user_id, name, email, password, role, theater_id) VALUES (:id, :name, :email, :password, :role, :theaterId)";
+                    string query = "INSERT INTO app_user (name, email, password, role, theater_id) VALUES (:name, :email, :password, :role, :theaterId)";
                     using (var command = new OracleCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue(":id", entity.UserId);
                         command.Parameters.AddWithValue(":name", entity.Name);
                         command.Parameters.AddWithValue(":email", entity.Email);
                         command.Parameters.AddWithValue(":password", entity.Password);
