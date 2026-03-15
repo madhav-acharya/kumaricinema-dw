@@ -17,7 +17,7 @@ Inherits="KumariCinema.Login" %>
     />
     <style>
       body {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1f9d55 0%, #2fbf71 100%);
         min-height: 100vh;
         display: flex;
         align-items: center;
@@ -32,12 +32,12 @@ Inherits="KumariCinema.Login" %>
         border-radius: 12px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         overflow: hidden;
-        max-width: 620px;
-        width: 100%;
+        width: 900px;
+        max-width: 95vw;
       }
 
       .login-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1f9d55 0%, #2fbf71 100%);
         color: white;
         padding: 40px 20px;
         text-align: center;
@@ -79,7 +79,7 @@ Inherits="KumariCinema.Login" %>
       }
 
       .form-group input:focus {
-        border-color: #667eea;
+        border-color: #1f9d55;
         outline: none;
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
       }
@@ -87,7 +87,7 @@ Inherits="KumariCinema.Login" %>
       .login-button {
         width: 100%;
         padding: 12px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1f9d55 0%, #2fbf71 100%);
         color: white;
         border: none;
         border-radius: 6px;
