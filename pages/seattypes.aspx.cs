@@ -44,7 +44,6 @@ namespace KumariCinema.Admin
                 _repo = new SeatTypeRepository();
                 if (_repo.Insert(new SeatType
                 {
-                    SeatTypeId = idInput.Text,
                     Name = nameInput.Text,
                     Description = descInput.Text,
                     PriceMultiplier = decimal.Parse(priceInput.Text)
