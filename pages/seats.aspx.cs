@@ -12,19 +12,11 @@ namespace KumariCinema.Admin
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["CurrentUser"] == null)
-            {
-                Response.Redirect("~/components/Login.aspx");
-                return;
-            }
+            if (Session["CurrentUser"] == null) { Response.Redirect("~/pages/Login.aspx"); return; }
 
             var auth = new AuthorizationService();
             var user = (AppUser)Session["CurrentUser"];
-            if (!auth.CanManageShows(user, user.TheaterId))
-            {
-                Response.Redirect("~/components/Login.aspx");
-                return;
-            }
+            if (!auth.CanManageShows(user, user.TheaterId)) { Response.Redirect("~/pages/Login.aspx"); return; }
 
             if (!IsPostBack)
             {
@@ -41,82 +33,119 @@ namespace KumariCinema.Admin
 
         private void LoadSeatTypes()
         {
-            _seatTypeRepository = new SeatTypeRepository();
-            var data = _seatTypeRepository.GetAll();
+            try
+            {
+                _seatTypeRepository = new SeatTypeRepository();
+                var data = _seatTypeRepository.GetAll();
 
-            seatTypeDropdown.DataSource = data;
-            seatTypeDropdown.DataTextField = "Name";
-            seatTypeDropdown.DataValueField = "SeatTypeId";
-            seatTypeDropdown.DataBind();
+                seatTypeDropdown.DataSource = data;
+                seatTypeDropdown.DataTextField = "Name";
+                seatTypeDropdown.DataValueField = "SeatTypeId";
+                seatTypeDropdown.DataBind();
 
-            editSeatTypeDropdown.DataSource = data;
-            editSeatTypeDropdown.DataTextField = "Name";
-            editSeatTypeDropdown.DataValueField = "SeatTypeId";
-            editSeatTypeDropdown.DataBind();
+                editSeatTypeDropdown.DataSource = data;
+                editSeatTypeDropdown.DataTextField = "Name";
+                editSeatTypeDropdown.DataValueField = "SeatTypeId";
+                editSeatTypeDropdown.DataBind();
+            }
+            catch (Exception ex)
+            {
+                ClientScript.RegisterStartupScript(GetType(), "loadTypesErr", $"showToast('Error loading seat types: {EscapeJs(ex.Message)}', 'error');", true);
+            }
         }
 
         private void LoadSeats()
         {
-            _seatRepository = new SeatRepository();
-            seatsRepeater.DataSource = _seatRepository.GetAll();
-            seatsRepeater.DataBind();
+            try
+            {
+                _seatRepository = new SeatRepository();
+                seatsRepeater.DataSource = _seatRepository.GetAll();
+                seatsRepeater.DataBind();
+            }
+            catch (Exception ex)
+            {
+                ClientScript.RegisterStartupScript(GetType(), "loadSeatsErr", $"showToast('Error loading seats: {EscapeJs(ex.Message)}', 'error');", true);
+            }
         }
 
         protected void SaveSeat_Click(object sender, EventArgs e)
         {
-            _seatRepository = new SeatRepository();
-            var seat = new Seat
+            try
             {
-                SeatNumber = seatNumberInput.Text.Trim(),
-                Status = statusDropdown.SelectedValue,
-                SeatTypeId = seatTypeDropdown.SelectedValue
-            };
+                _seatRepository = new SeatRepository();
+                var seat = new Seat
+                {
+                    SeatNumber = seatNumberInput.Text.Trim(),
+                    Status = statusDropdown.SelectedValue,
+                    SeatTypeId = seatTypeDropdown.SelectedValue
+                };
 
-            if (_seatRepository.Insert(seat))
-            {
-                LoadSeats();
-                ClientScript.RegisterStartupScript(GetType(), "success", "showToast('Seat added successfully', 'success');", true);
+                if (_seatRepository.Insert(seat))
+                {
+                    LoadSeats();
+                    ClientScript.RegisterStartupScript(GetType(), "saveOk", "showToast('Seat added successfully', 'success');", true);
+                }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "saveErr", "showToast('Failed to add seat', 'error');", true);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Failed to add seat', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "saveErr", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
         protected void UpdateSeat_Click(object sender, EventArgs e)
         {
-            _seatRepository = new SeatRepository();
-            var seat = new Seat
+            try
             {
-                SeatId = editSeatIdField.Value,
-                SeatNumber = editSeatNumberInput.Text.Trim(),
-                Status = editStatusDropdown.SelectedValue,
-                SeatTypeId = editSeatTypeDropdown.SelectedValue
-            };
+                _seatRepository = new SeatRepository();
+                var seat = new Seat
+                {
+                    SeatId = editSeatIdField.Value,
+                    SeatNumber = editSeatNumberInput.Text.Trim(),
+                    Status = editStatusDropdown.SelectedValue,
+                    SeatTypeId = editSeatTypeDropdown.SelectedValue
+                };
 
-            if (_seatRepository.Update(seat))
-            {
-                LoadSeats();
-                ClientScript.RegisterStartupScript(GetType(), "success", "showToast('Seat updated successfully', 'success');", true);
+                if (_seatRepository.Update(seat))
+                {
+                    LoadSeats();
+                    ClientScript.RegisterStartupScript(GetType(), "updateOk", "showToast('Seat updated successfully', 'success');", true);
+                }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "updateErr", "showToast('Failed to update seat', 'error');", true);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Failed to update seat', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "updateErr", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
         private void DeleteSeat(string seatId)
         {
-            _seatRepository = new SeatRepository();
-            if (_seatRepository.Delete(seatId))
+            try
             {
-                LoadSeats();
-                ClientScript.RegisterStartupScript(GetType(), "success", "showToast('Seat deleted successfully', 'success');", true);
+                _seatRepository = new SeatRepository();
+                if (_seatRepository.Delete(seatId))
+                {
+                    LoadSeats();
+                    ClientScript.RegisterStartupScript(GetType(), "deleteOk", "showToast('Seat deleted successfully', 'success');", true);
+                }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "deleteErr", "showToast('Failed to delete seat', 'error');", true);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Failed to delete seat', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "deleteErr", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
+
+        private string EscapeJs(string s) => s?.Replace("'", "\\'").Replace("\r", "").Replace("\n", " ") ?? "";
     }
 }
