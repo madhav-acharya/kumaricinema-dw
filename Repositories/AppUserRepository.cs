@@ -23,7 +23,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT user_id, name, email, password, role, theater_id FROM app_user ORDER BY name";
+                    string query = "SELECT user_id, name, email, password, role, theater_id, created_at FROM app_user ORDER BY name";
                     using (var command = new OracleCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -37,7 +37,8 @@ namespace KumariCinema.Repositories
                                     Email = reader["email"].ToString(),
                                     Password = reader["password"].ToString(),
                                     Role = reader["role"].ToString(),
-                                    TheaterId = reader["theater_id"] != DBNull.Value ? reader["theater_id"].ToString() : null
+                                    TheaterId = reader["theater_id"] != DBNull.Value ? reader["theater_id"].ToString() : null,
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
@@ -58,7 +59,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT user_id, name, email, password, role, theater_id FROM app_user WHERE user_id = :id";
+                    string query = "SELECT user_id, name, email, password, role, theater_id, created_at FROM app_user WHERE user_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", id);
@@ -73,7 +74,8 @@ namespace KumariCinema.Repositories
                                     Email = reader["email"].ToString(),
                                     Password = reader["password"].ToString(),
                                     Role = reader["role"].ToString(),
-                                    TheaterId = reader["theater_id"] != DBNull.Value ? reader["theater_id"].ToString() : null
+                                    TheaterId = reader["theater_id"] != DBNull.Value ? reader["theater_id"].ToString() : null,
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 };
                             }
                         }
@@ -166,7 +168,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT user_id, name, email, password, role, theater_id FROM app_user WHERE email = :email";
+                    string query = "SELECT user_id, name, email, password, role, theater_id, created_at FROM app_user WHERE email = :email";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":email", email);
@@ -203,7 +205,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT user_id, name, email, password, role, theater_id FROM app_user WHERE theater_id = :theaterId ORDER BY name";
+                    string query = "SELECT user_id, name, email, password, role, theater_id, created_at FROM app_user WHERE theater_id = :theaterId ORDER BY name";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":theaterId", theaterId);
