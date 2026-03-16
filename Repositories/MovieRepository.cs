@@ -23,7 +23,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT movie_id, name, duration_minutes, viewing_format FROM movie ORDER BY name";
+                    string query = "SELECT movie_id, name, duration_minutes, viewing_format, created_at FROM movie ORDER BY name";
                     using (var command = new OracleCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -35,7 +35,8 @@ namespace KumariCinema.Repositories
                                     MovieId = reader["movie_id"].ToString(),
                                     Name = reader["name"].ToString(),
                                     DurationMinutes = Convert.ToInt32(reader["duration_minutes"]),
-                                    ViewingFormat = reader["viewing_format"].ToString()
+                                    ViewingFormat = reader["viewing_format"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
@@ -56,7 +57,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT movie_id, name, duration_minutes, viewing_format FROM movie WHERE movie_id = :id";
+                    string query = "SELECT movie_id, name, duration_minutes, viewing_format, created_at FROM movie WHERE movie_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", id);
@@ -69,7 +70,8 @@ namespace KumariCinema.Repositories
                                     MovieId = reader["movie_id"].ToString(),
                                     Name = reader["name"].ToString(),
                                     DurationMinutes = Convert.ToInt32(reader["duration_minutes"]),
-                                    ViewingFormat = reader["viewing_format"].ToString()
+                                    ViewingFormat = reader["viewing_format"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 };
                             }
                         }
