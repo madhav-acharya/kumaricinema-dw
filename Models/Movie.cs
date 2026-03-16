@@ -6,5 +6,6 @@ namespace KumariCinema.Models
         public string Name { get; set; }
         public int DurationMinutes { get; set; }
         public string ViewingFormat { get; set; }
+        public System.DateTime CreatedAt { get; set; }
     }
 }
