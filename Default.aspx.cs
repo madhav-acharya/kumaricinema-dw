@@ -13,7 +13,7 @@ namespace KumariCinema
                 return;
             }
 
-            Response.Redirect("~/components/Login.aspx", true);
+            Response.Redirect("~/pages/Login.aspx", true);
         }
     }
 }
