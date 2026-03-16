@@ -23,7 +23,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT theater_id, name, location FROM theater ORDER BY name";
+                    string query = "SELECT theater_id, name, location, created_at FROM theater ORDER BY name";
                     using (var command = new OracleCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -34,7 +34,8 @@ namespace KumariCinema.Repositories
                                 {
                                     TheaterId = reader["theater_id"].ToString(),
                                     Name = reader["name"].ToString(),
-                                    Location = reader["location"].ToString()
+                                    Location = reader["location"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
@@ -55,7 +56,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT theater_id, name, location FROM theater WHERE theater_id = :id";
+                    string query = "SELECT theater_id, name, location, created_at FROM theater WHERE theater_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", id);
@@ -67,7 +68,8 @@ namespace KumariCinema.Repositories
                                 {
                                     TheaterId = reader["theater_id"].ToString(),
                                     Name = reader["name"].ToString(),
-                                    Location = reader["location"].ToString()
+                                    Location = reader["location"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 };
                             }
                         }
