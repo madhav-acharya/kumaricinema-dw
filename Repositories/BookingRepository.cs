@@ -23,7 +23,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT booking_id, total_amount, user_id, show_id FROM booking ORDER BY booking_id DESC";
+                    string query = "SELECT booking_id, total_amount, user_id, show_id, created_at FROM booking ORDER BY booking_id DESC";
                     using (var command = new OracleCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -35,7 +35,8 @@ namespace KumariCinema.Repositories
                                     BookingId = reader["booking_id"].ToString(),
                                     TotalAmount = Convert.ToDecimal(reader["total_amount"]),
                                     UserId = reader["user_id"].ToString(),
-                                    ShowId = reader["show_id"].ToString()
+                                    ShowId = reader["show_id"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
@@ -56,7 +57,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT booking_id, total_amount, user_id, show_id FROM booking WHERE booking_id = :id";
+                    string query = "SELECT booking_id, total_amount, user_id, show_id, created_at FROM booking WHERE booking_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", id);
@@ -69,7 +70,8 @@ namespace KumariCinema.Repositories
                                     BookingId = reader["booking_id"].ToString(),
                                     TotalAmount = Convert.ToDecimal(reader["total_amount"]),
                                     UserId = reader["user_id"].ToString(),
-                                    ShowId = reader["show_id"].ToString()
+                                    ShowId = reader["show_id"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 };
                             }
                         }
@@ -159,7 +161,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT booking_id, total_amount, user_id, show_id FROM booking WHERE user_id = :userId ORDER BY booking_id DESC";
+                    string query = "SELECT booking_id, total_amount, user_id, show_id, created_at FROM booking WHERE user_id = :userId ORDER BY booking_id DESC";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":userId", userId);
@@ -172,7 +174,8 @@ namespace KumariCinema.Repositories
                                     BookingId = reader["booking_id"].ToString(),
                                     TotalAmount = Convert.ToDecimal(reader["total_amount"]),
                                     UserId = reader["user_id"].ToString(),
-                                    ShowId = reader["show_id"].ToString()
+                                    ShowId = reader["show_id"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
@@ -257,6 +260,42 @@ namespace KumariCinema.Repositories
             {
                 throw new Exception("Error removing seat from booking: " + ex.Message);
             }
+        }
+
+        public List<Booking> GetByTheaterId(string theaterId)
+        {
+            var bookings = new List<Booking>();
+            try
+            {
+                using (var connection = new OracleConnection(_connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT b.booking_id, b.total_amount, b.user_id, b.show_id, b.created_at FROM booking b INNER JOIN movie_show ms ON b.show_id = ms.show_id INNER JOIN hall h ON ms.hall_id = h.hall_id WHERE h.theater_id = :theaterId ORDER BY b.booking_id DESC";
+                    using (var command = new OracleCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue(":theaterId", theaterId);
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                bookings.Add(new Booking
+                                {
+                                    BookingId = reader["booking_id"].ToString(),
+                                    TotalAmount = Convert.ToDecimal(reader["total_amount"]),
+                                    UserId = reader["user_id"].ToString(),
+                                    ShowId = reader["show_id"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving bookings by theater: " + ex.Message);
+            }
+            return bookings;
         }
     }
 }
