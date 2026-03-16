@@ -23,7 +23,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT seat_type_id, name, description, price_multiplier FROM seat_type ORDER BY name";
+                    string query = "SELECT seat_type_id, name, description, price_multiplier, created_at FROM seat_type ORDER BY name";
                     using (var command = new OracleCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -35,7 +35,8 @@ namespace KumariCinema.Repositories
                                     SeatTypeId = reader["seat_type_id"].ToString(),
                                     Name = reader["name"].ToString(),
                                     Description = reader["description"].ToString(),
-                                    PriceMultiplier = Convert.ToDecimal(reader["price_multiplier"])
+                                    PriceMultiplier = Convert.ToDecimal(reader["price_multiplier"]),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
@@ -56,7 +57,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT seat_type_id, name, description, price_multiplier FROM seat_type WHERE seat_type_id = :id";
+                    string query = "SELECT seat_type_id, name, description, price_multiplier, created_at FROM seat_type WHERE seat_type_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", id);
@@ -69,7 +70,8 @@ namespace KumariCinema.Repositories
                                     SeatTypeId = reader["seat_type_id"].ToString(),
                                     Name = reader["name"].ToString(),
                                     Description = reader["description"].ToString(),
-                                    PriceMultiplier = Convert.ToDecimal(reader["price_multiplier"])
+                                    PriceMultiplier = Convert.ToDecimal(reader["price_multiplier"]),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 };
                             }
                         }
