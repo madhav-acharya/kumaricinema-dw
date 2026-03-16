@@ -9,38 +9,21 @@ namespace KumariCinema.Admin
     public partial class movies : System.Web.UI.Page
     {
         private MovieRepository _movieRepository;
-        private AuthorizationService _authorizationService;
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["CurrentUser"] == null) { Response.Redirect("~/pages/Login.aspx"); return; }
+            var currentUser = (AppUser)Session["CurrentUser"];
+            if (!new AuthorizationService().IsAdminLevel(currentUser)) { Response.Redirect("~/pages/Login.aspx"); return; }
+
             if (!IsPostBack)
             {
-                CheckAuthorization();
                 LoadMovies();
                 SetActiveLink("moviesLink");
             }
-            else
+            else if (Request.Form["deleteMovieId"] != null)
             {
-                if (Request.Form["deleteMovieId"] != null)
-                {
-                    DeleteMovie(Request.Form["deleteMovieId"]);
-                }
-            }
-        }
-
-        private void CheckAuthorization()
-        {
-            if (Session["CurrentUser"] == null)
-            {
-                Response.Redirect("~/components/Login.aspx");
-            }
-
-            _authorizationService = new AuthorizationService();
-            AppUser currentUser = (AppUser)Session["CurrentUser"];
-
-            if (!_authorizationService.IsAdminLevel(currentUser))
-            {
-                Response.Redirect("~/components/Login.aspx");
+                DeleteMovie(Request.Form["deleteMovieId"]);
             }
         }
 
@@ -55,7 +38,7 @@ namespace KumariCinema.Admin
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "error", $"showToast('Error loading movies: {ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "error", $"showToast('Error loading movies: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -79,7 +62,7 @@ namespace KumariCinema.Admin
                 {
                     MovieIdInput_Clear();
                     LoadMovies();
-                    ClientScript.RegisterStartupScript(this.GetType(), "success", "showToast('Movie added successfully', 'success'); document.getElementById('addMovieModal').closest('.modal') && bootstrap.Modal.getInstance(document.getElementById('addMovieModal')).hide();", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "success", "showToast('Movie added successfully', 'success');", true);
                 }
                 else
                 {
@@ -88,7 +71,7 @@ namespace KumariCinema.Admin
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "error", $"showToast('Error: {ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "error", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -109,7 +92,7 @@ namespace KumariCinema.Admin
                 if (_movieRepository.Update(movie))
                 {
                     LoadMovies();
-                    ClientScript.RegisterStartupScript(this.GetType(), "success", "showToast('Movie updated successfully', 'success'); document.getElementById('editMovieModal').closest('.modal') && bootstrap.Modal.getInstance(document.getElementById('editMovieModal')).hide();", true);
+                    ClientScript.RegisterStartupScript(this.GetType(), "success", "showToast('Movie updated successfully', 'success');", true);
                 }
                 else
                 {
@@ -118,7 +101,7 @@ namespace KumariCinema.Admin
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "error", $"showToast('Error: {ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "error", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -140,7 +123,7 @@ namespace KumariCinema.Admin
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "error", $"showToast('Error: {ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "error", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -156,5 +139,8 @@ namespace KumariCinema.Admin
         {
             ClientScript.RegisterStartupScript(this.GetType(), "setActive", $"setActiveLink('{linkId}');", true);
         }
+
+        private string EscapeJs(string s) => s?.Replace("'", "\\'").Replace("\r", "").Replace("\n", " ") ?? "";
     }
+
 }
