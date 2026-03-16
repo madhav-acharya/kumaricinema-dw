@@ -14,7 +14,7 @@ namespace KumariCinema.Admin {
 
         protected void Page_Load(object sender, EventArgs e) {
             if (Session["CurrentUser"] == null) {
-                Response.Redirect("~/components/Login.aspx");
+                Response.Redirect("~/pages/Login.aspx");
                 return;
             }
 
@@ -22,7 +22,7 @@ namespace KumariCinema.Admin {
             var currentUser = (AppUser)Session["CurrentUser"];
 
             if (!_authorizationService.IsAdminLevel(currentUser) && !_authorizationService.IsStaff(currentUser)) {
-                Response.Redirect("~/components/Login.aspx");
+                Response.Redirect("~/pages/Login.aspx");
                 return;
             }
 
@@ -38,21 +38,28 @@ namespace KumariCinema.Admin {
         }
 
         private void LoadTheaters(AppUser currentUser) {
-            _theaterRepository = new TheaterRepository();
-
-            List<Theater> theaters = _authorizationService.IsSuperAdmin(currentUser)
-                ? _theaterRepository.GetAll()
-                : _theaterRepository.GetAll().Where(t => t.TheaterId == currentUser.TheaterId).ToList();
-
-            theaterDropdown.DataSource = theaters;
-            theaterDropdown.DataTextField = "Name";
-            theaterDropdown.DataValueField = "TheaterId";
-            theaterDropdown.DataBind();
-
-            editTheaterDropdown.DataSource = theaters;
-            editTheaterDropdown.DataTextField = "Name";
-            editTheaterDropdown.DataValueField = "TheaterId";
-            editTheaterDropdown.DataBind();
+        try
+        {
+                _theaterRepository = new TheaterRepository();
+    
+                List<Theater> theaters = _authorizationService.IsSuperAdmin(currentUser)
+                    ? _theaterRepository.GetAll()
+                    : _theaterRepository.GetAll().Where(t => t.TheaterId == currentUser.TheaterId).ToList();
+    
+                theaterDropdown.DataSource = theaters;
+                theaterDropdown.DataTextField = "Name";
+                theaterDropdown.DataValueField = "TheaterId";
+                theaterDropdown.DataBind();
+    
+                editTheaterDropdown.DataSource = theaters;
+                editTheaterDropdown.DataTextField = "Name";
+                editTheaterDropdown.DataValueField = "TheaterId";
+                editTheaterDropdown.DataBind();
+        }
+        catch (Exception ex)
+        {
+            ClientScript.RegisterStartupScript(GetType(), "loadTheatersErr", $"showToast('Error: {{EscapeJs(ex.Message)}}', 'error');", true);
+        }
         }
 
         private void LoadHalls(AppUser currentUser) {
@@ -65,7 +72,7 @@ namespace KumariCinema.Admin {
                 hallsRepeater.DataSource = halls;
                 hallsRepeater.DataBind();
             } catch (Exception ex) {
-                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error loading halls: {ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error loading halls: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -96,7 +103,7 @@ namespace KumariCinema.Admin {
                     ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Failed to add hall', 'error');", true);
                 }
             } catch (Exception ex) {
-                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -129,7 +136,7 @@ namespace KumariCinema.Admin {
                     ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Failed to update hall', 'error');", true);
                 }
             } catch (Exception ex) {
-                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -155,7 +162,7 @@ namespace KumariCinema.Admin {
                     ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Failed to delete hall', 'error');", true);
                 }
             } catch (Exception ex) {
-                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -165,5 +172,7 @@ namespace KumariCinema.Admin {
             capacityInput.Text = string.Empty;
             screenTypeDropdown.SelectedIndex = 0;
         }
+
+        private string EscapeJs(string s) => s?.Replace("'", "\\'").Replace("\r", "").Replace("\n", " ") ?? "";
     }
 }
