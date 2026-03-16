@@ -23,7 +23,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT seat_id, seat_number, status, seat_type_id FROM seat ORDER BY seat_number";
+                    string query = "SELECT seat_id, seat_number, status, seat_type_id, created_at FROM seat ORDER BY seat_number";
                     using (var command = new OracleCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -35,7 +35,8 @@ namespace KumariCinema.Repositories
                                     SeatId = reader["seat_id"].ToString(),
                                     SeatNumber = reader["seat_number"].ToString(),
                                     Status = reader["status"].ToString(),
-                                    SeatTypeId = reader["seat_type_id"].ToString()
+                                    SeatTypeId = reader["seat_type_id"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
@@ -56,7 +57,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT seat_id, seat_number, status, seat_type_id FROM seat WHERE seat_id = :id";
+                    string query = "SELECT seat_id, seat_number, status, seat_type_id, created_at FROM seat WHERE seat_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", id);
@@ -69,7 +70,8 @@ namespace KumariCinema.Repositories
                                     SeatId = reader["seat_id"].ToString(),
                                     SeatNumber = reader["seat_number"].ToString(),
                                     Status = reader["status"].ToString(),
-                                    SeatTypeId = reader["seat_type_id"].ToString()
+                                    SeatTypeId = reader["seat_type_id"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 };
                             }
                         }
