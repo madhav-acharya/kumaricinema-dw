@@ -1,5 +1,6 @@
 using KumariCinema.Models;
 using KumariCinema.Repositories;
+using KumariCinema.Services;
 using System;
 using System.Collections.Generic;
 
@@ -11,9 +12,12 @@ namespace KumariCinema.Admin
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["CurrentUser"] == null) { Response.Redirect("~/pages/Login.aspx"); return; }
+            var currentUser = (AppUser)Session["CurrentUser"];
+            if (!new AuthorizationService().IsAdminLevel(currentUser)) { Response.Redirect("~/pages/Login.aspx"); return; }
+
             if (!IsPostBack)
             {
-                if (Session["CurrentUser"] == null) Response.Redirect("~/components/Login.aspx");
                 Load();
                 SetActiveLink("languagesLink");
             }
@@ -33,7 +37,7 @@ namespace KumariCinema.Admin
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(GetType(), "e", $"showToast('{ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "e", $"showToast('{EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -51,7 +55,7 @@ namespace KumariCinema.Admin
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(GetType(), "e", $"showToast('{ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "e", $"showToast('{EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -68,7 +72,7 @@ namespace KumariCinema.Admin
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(GetType(), "e", $"showToast('{ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "e", $"showToast('{EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -81,7 +85,7 @@ namespace KumariCinema.Admin
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(GetType(), "e", $"showToast('{ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "e", $"showToast('{EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -89,5 +93,8 @@ namespace KumariCinema.Admin
         {
             ClientScript.RegisterStartupScript(GetType(), "setActive", $"setActiveLink('{linkId}');", true);
         }
+
+        private string EscapeJs(string s) => s?.Replace("'", "\\'").Replace("\r", "").Replace("\n", " ") ?? "";
     }
+
 }
