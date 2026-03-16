@@ -23,7 +23,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT genre_id, name, description FROM genre ORDER BY name";
+                    string query = "SELECT genre_id, name, description, created_at FROM genre ORDER BY name";
                     using (var command = new OracleCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -34,7 +34,8 @@ namespace KumariCinema.Repositories
                                 {
                                     GenreId = reader["genre_id"].ToString(),
                                     Name = reader["name"].ToString(),
-                                    Description = reader["description"].ToString()
+                                    Description = reader["description"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
@@ -55,7 +56,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT genre_id, name, description FROM genre WHERE genre_id = :id";
+                    string query = "SELECT genre_id, name, description, created_at FROM genre WHERE genre_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", id);
@@ -67,7 +68,8 @@ namespace KumariCinema.Repositories
                                 {
                                     GenreId = reader["genre_id"].ToString(),
                                     Name = reader["name"].ToString(),
-                                    Description = reader["description"].ToString()
+                                    Description = reader["description"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 };
                             }
                         }
