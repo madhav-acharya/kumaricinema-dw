@@ -6,6 +6,7 @@ namespace KumariCinema.Models
         public string SeatNumber { get; set; }
         public string Status { get; set; }
         public string SeatTypeId { get; set; }
+        public System.DateTime CreatedAt { get; set; }
         public SeatType SeatType { get; set; }
     }
 }
