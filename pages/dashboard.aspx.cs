@@ -31,7 +31,7 @@ namespace KumariCinema.Admin
         {
             if (Session["CurrentUser"] == null)
             {
-                Response.Redirect("~/components/Login.aspx");
+                Response.Redirect("~/pages/Login.aspx");
             }
         }
 
@@ -73,7 +73,12 @@ namespace KumariCinema.Admin
                 _currentShows = userShows;
 
                 totalBookingsLabel.Text = userBookings.Count.ToString();
-                totalRevenueLabel.Text = "Rs. " + Math.Round(userPayments.Where(p => string.Equals(p.PaymentStatus, "completed", StringComparison.OrdinalIgnoreCase)).Sum(p => p.AmountPaid), 0).ToString("0");
+                totalRevenueLabel.Text = Math.Round(
+                    userPayments
+                        .Where(p => string.Equals(p.PaymentStatus, "completed", StringComparison.OrdinalIgnoreCase))
+                        .Sum(p => p.AmountPaid),
+                    0
+                ).ToString("N0");
                 activeShowsLabel.Text = userShows.Count(s => s.StartTime > DateTime.Now).ToString();
                 totalUsersLabel.Text = userUsers.Count.ToString();
 
@@ -90,31 +95,52 @@ namespace KumariCinema.Admin
 
         private void LoadBookingsTrendChart(List<Booking> bookings)
         {
-            var showLookup = (_currentShows ?? new List<MovieShow>()).ToDictionary(s => s.ShowId, s => s.StartTime);
             var last7Days = Enumerable.Range(0, 7)
-                .Select(i => DateTime.Now.AddDays(-i).Date)
-                .OrderBy(d => d)
+                .Select(i => DateTime.Now.Date.AddDays(-6 + i))
                 .ToList();
 
-            var data = last7Days.Select(date =>
-                bookings.Count(b => showLookup.ContainsKey(b.ShowId) && showLookup[b.ShowId].Date == date)
-            ).ToList();
+            var labels = last7Days.Select(d => d.ToString("ddd")).ToList();
+            var data = last7Days
+                .Select(date => bookings.Count(b => b.CreatedAt.Date == date.Date))
+                .ToList();
 
+            bookingsTrendLabels.Text = string.Join(",", labels.Select(l => $"'{l}'"));
             bookingsTrendData.Text = string.Join(",", data);
         }
 
         private void LoadPaymentMethodsChart(List<Payment> payments)
         {
-            var methods = new[] { "cash", "card", "esewa", "khalti", "bank_transfer" };
-            var data = methods.Select(m => payments.Count(p => string.Equals(p.PaymentMethod, m, StringComparison.OrdinalIgnoreCase))).ToList();
+            Func<string, string> normalizeMethod = method =>
+                string.IsNullOrWhiteSpace(method)
+                    ? string.Empty
+                    : method.Replace("_", " ").Replace("-", " ").Trim().ToLowerInvariant();
+
+            var methods = new[] { "cash", "card", "esewa", "khalti", "bank transfer" };
+            var data = methods
+                .Select(m => payments.Count(p => normalizeMethod(p.PaymentMethod) == m))
+                .ToList();
+
             paymentMethodsData.Text = string.Join(",", data);
         }
 
         private void LoadShowCategoryChart(List<MovieShow> shows)
         {
-            var categories = new[] { "regular", "premium", "special" };
-            var data = categories.Select(c => shows.Count(s => string.Equals(s.ShowCategory, c, StringComparison.OrdinalIgnoreCase))).ToList();
-            showCategoryData.Text = string.Join(",", data);
+            var grouped = shows
+                .Where(s => !string.IsNullOrWhiteSpace(s.ShowCategory))
+                .GroupBy(s => s.ShowCategory.Trim())
+                .OrderByDescending(g => g.Count())
+                .ThenBy(g => g.Key)
+                .ToList();
+
+            if (!grouped.Any())
+            {
+                showCategoryLabels.Text = "'No Data'";
+                showCategoryData.Text = "0";
+                return;
+            }
+
+            showCategoryLabels.Text = string.Join(",", grouped.Select(g => $"'{g.Key.Replace("'", "\\'")}'"));
+            showCategoryData.Text = string.Join(",", grouped.Select(g => g.Count()));
         }
 
         private void LoadTheaterPerformanceChart(List<Booking> bookings, List<Theater> theaters, List<MovieShow> shows, List<Hall> halls, HashSet<string> visibleTheaterIds)
