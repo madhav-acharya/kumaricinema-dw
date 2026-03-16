@@ -23,7 +23,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT language_id, name, code FROM language ORDER BY name";
+                    string query = "SELECT language_id, name, code, created_at FROM language ORDER BY name";
                     using (var command = new OracleCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -34,7 +34,8 @@ namespace KumariCinema.Repositories
                                 {
                                     LanguageId = reader["language_id"].ToString(),
                                     Name = reader["name"].ToString(),
-                                    Code = reader["code"].ToString()
+                                    Code = reader["code"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
@@ -55,7 +56,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT language_id, name, code FROM language WHERE language_id = :id";
+                    string query = "SELECT language_id, name, code, created_at FROM language WHERE language_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", id);
@@ -67,7 +68,8 @@ namespace KumariCinema.Repositories
                                 {
                                     LanguageId = reader["language_id"].ToString(),
                                     Name = reader["name"].ToString(),
-                                    Code = reader["code"].ToString()
+                                    Code = reader["code"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 };
                             }
                         }
