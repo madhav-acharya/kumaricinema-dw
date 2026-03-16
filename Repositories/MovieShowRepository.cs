@@ -23,7 +23,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, language_id, genre_id FROM movie_show ORDER BY start_time DESC";
+                    string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, created_at FROM movie_show ORDER BY start_time DESC";
                     using (var command = new OracleCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -39,8 +39,9 @@ namespace KumariCinema.Repositories
                                     EndTime = Convert.ToDateTime(reader["end_time"]),
                                     ShowCategory = reader["show_category"].ToString(),
                                     BaseTicketPrice = Convert.ToDecimal(reader["base_ticket_price"]),
-                                    LanguageId = reader["language_id"] != DBNull.Value ? reader["language_id"].ToString() : null,
-                                    GenreId = reader["genre_id"] != DBNull.Value ? reader["genre_id"].ToString() : null
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"]),
+                                    LanguageId = null,
+                                    GenreId = null
                                 });
                             }
                         }
@@ -61,7 +62,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, language_id, genre_id FROM movie_show WHERE show_id = :id";
+                    string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, created_at FROM movie_show WHERE show_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", id);
@@ -78,8 +79,9 @@ namespace KumariCinema.Repositories
                                     EndTime = Convert.ToDateTime(reader["end_time"]),
                                     ShowCategory = reader["show_category"].ToString(),
                                     BaseTicketPrice = Convert.ToDecimal(reader["base_ticket_price"]),
-                                    LanguageId = reader["language_id"] != DBNull.Value ? reader["language_id"].ToString() : null,
-                                    GenreId = reader["genre_id"] != DBNull.Value ? reader["genre_id"].ToString() : null
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"]),
+                                    LanguageId = null,
+                                    GenreId = null
                                 };
                             }
                         }
@@ -100,7 +102,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "INSERT INTO movie_show (movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, language_id, genre_id) VALUES (:movieId, :hallId, :startTime, :endTime, :category, :price, :languageId, :genreId)";
+                    string query = "INSERT INTO movie_show (movie_id, hall_id, start_time, end_time, show_category, base_ticket_price) VALUES (:movieId, :hallId, :startTime, :endTime, :category, :price)";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":movieId", entity.MovieId);
@@ -109,8 +111,6 @@ namespace KumariCinema.Repositories
                         command.Parameters.AddWithValue(":endTime", entity.EndTime);
                         command.Parameters.AddWithValue(":category", entity.ShowCategory);
                         command.Parameters.AddWithValue(":price", entity.BaseTicketPrice);
-                        command.Parameters.AddWithValue(":languageId", entity.LanguageId ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue(":genreId", entity.GenreId ?? (object)DBNull.Value);
                         return command.ExecuteNonQuery() > 0;
                     }
                 }
@@ -128,7 +128,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "UPDATE movie_show SET movie_id = :movieId, hall_id = :hallId, start_time = :startTime, end_time = :endTime, show_category = :category, base_ticket_price = :price, language_id = :languageId, genre_id = :genreId WHERE show_id = :id";
+                    string query = "UPDATE movie_show SET movie_id = :movieId, hall_id = :hallId, start_time = :startTime, end_time = :endTime, show_category = :category, base_ticket_price = :price WHERE show_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", entity.ShowId);
@@ -138,8 +138,6 @@ namespace KumariCinema.Repositories
                         command.Parameters.AddWithValue(":endTime", entity.EndTime);
                         command.Parameters.AddWithValue(":category", entity.ShowCategory);
                         command.Parameters.AddWithValue(":price", entity.BaseTicketPrice);
-                        command.Parameters.AddWithValue(":languageId", entity.LanguageId ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue(":genreId", entity.GenreId ?? (object)DBNull.Value);
                         return command.ExecuteNonQuery() > 0;
                     }
                 }
@@ -179,7 +177,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, language_id, genre_id FROM movie_show WHERE movie_id = :movieId ORDER BY start_time";
+                    string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, created_at FROM movie_show WHERE movie_id = :movieId ORDER BY start_time";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":movieId", movieId);
@@ -196,8 +194,9 @@ namespace KumariCinema.Repositories
                                     EndTime = Convert.ToDateTime(reader["end_time"]),
                                     ShowCategory = reader["show_category"].ToString(),
                                     BaseTicketPrice = Convert.ToDecimal(reader["base_ticket_price"]),
-                                    LanguageId = reader["language_id"] != DBNull.Value ? reader["language_id"].ToString() : null,
-                                    GenreId = reader["genre_id"] != DBNull.Value ? reader["genre_id"].ToString() : null
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"]),
+                                    LanguageId = null,
+                                    GenreId = null
                                 });
                             }
                         }
@@ -219,7 +218,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, language_id, genre_id FROM movie_show WHERE hall_id = :hallId ORDER BY start_time";
+                    string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, created_at FROM movie_show WHERE hall_id = :hallId ORDER BY start_time";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":hallId", hallId);
@@ -236,8 +235,9 @@ namespace KumariCinema.Repositories
                                     EndTime = Convert.ToDateTime(reader["end_time"]),
                                     ShowCategory = reader["show_category"].ToString(),
                                     BaseTicketPrice = Convert.ToDecimal(reader["base_ticket_price"]),
-                                    LanguageId = reader["language_id"] != DBNull.Value ? reader["language_id"].ToString() : null,
-                                    GenreId = reader["genre_id"] != DBNull.Value ? reader["genre_id"].ToString() : null
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"]),
+                                    LanguageId = null,
+                                    GenreId = null
                                 });
                             }
                         }
@@ -247,6 +247,47 @@ namespace KumariCinema.Repositories
             catch (Exception ex)
             {
                 throw new Exception("Error retrieving shows by hall: " + ex.Message);
+            }
+            return shows;
+        }
+
+        public List<MovieShow> GetByTheaterId(string theaterId)
+        {
+            var shows = new List<MovieShow>();
+            try
+            {
+                using (var connection = new OracleConnection(_connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT ms.show_id, ms.movie_id, ms.hall_id, ms.start_time, ms.end_time, ms.show_category, ms.base_ticket_price, ms.created_at FROM movie_show ms INNER JOIN hall h ON ms.hall_id = h.hall_id WHERE h.theater_id = :theaterId ORDER BY ms.start_time DESC";
+                    using (var command = new OracleCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue(":theaterId", theaterId);
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                shows.Add(new MovieShow
+                                {
+                                    ShowId = reader["show_id"].ToString(),
+                                    MovieId = reader["movie_id"].ToString(),
+                                    HallId = reader["hall_id"].ToString(),
+                                    StartTime = Convert.ToDateTime(reader["start_time"]),
+                                    EndTime = Convert.ToDateTime(reader["end_time"]),
+                                    ShowCategory = reader["show_category"].ToString(),
+                                    BaseTicketPrice = Convert.ToDecimal(reader["base_ticket_price"]),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"]),
+                                    LanguageId = null,
+                                    GenreId = null
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving shows by theater: " + ex.Message);
             }
             return shows;
         }
