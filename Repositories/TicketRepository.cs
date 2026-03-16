@@ -23,7 +23,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT ticket_id, seat_id, show_id, ticket_price, ticket_status FROM ticket ORDER BY ticket_id DESC";
+                    string query = "SELECT ticket_id, seat_id, show_id, ticket_price, ticket_status, created_at FROM ticket ORDER BY ticket_id DESC";
                     using (var command = new OracleCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -36,7 +36,8 @@ namespace KumariCinema.Repositories
                                     SeatId = reader["seat_id"].ToString(),
                                     ShowId = reader["show_id"].ToString(),
                                     TicketPrice = Convert.ToDecimal(reader["ticket_price"]),
-                                    TicketStatus = reader["ticket_status"].ToString()
+                                    TicketStatus = reader["ticket_status"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
@@ -57,7 +58,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT ticket_id, seat_id, show_id, ticket_price, ticket_status FROM ticket WHERE ticket_id = :id";
+                    string query = "SELECT ticket_id, seat_id, show_id, ticket_price, ticket_status, created_at FROM ticket WHERE ticket_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", id);
@@ -71,7 +72,8 @@ namespace KumariCinema.Repositories
                                     SeatId = reader["seat_id"].ToString(),
                                     ShowId = reader["show_id"].ToString(),
                                     TicketPrice = Convert.ToDecimal(reader["ticket_price"]),
-                                    TicketStatus = reader["ticket_status"].ToString()
+                                    TicketStatus = reader["ticket_status"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 };
                             }
                         }
@@ -92,10 +94,9 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "INSERT INTO ticket (ticket_id, seat_id, show_id, ticket_price, ticket_status) VALUES (:id, :seatId, :showId, :price, :status)";
+                    string query = "INSERT INTO ticket (seat_id, show_id, ticket_price, ticket_status) VALUES (:seatId, :showId, :price, :status)";
                     using (var command = new OracleCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue(":id", entity.TicketId);
                         command.Parameters.AddWithValue(":seatId", entity.SeatId);
                         command.Parameters.AddWithValue(":showId", entity.ShowId);
                         command.Parameters.AddWithValue(":price", entity.TicketPrice);
@@ -164,7 +165,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT ticket_id, seat_id, show_id, ticket_price, ticket_status FROM ticket WHERE show_id = :showId ORDER BY ticket_id DESC";
+                    string query = "SELECT ticket_id, seat_id, show_id, ticket_price, ticket_status, created_at FROM ticket WHERE show_id = :showId ORDER BY ticket_id DESC";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":showId", showId);
@@ -178,7 +179,8 @@ namespace KumariCinema.Repositories
                                     SeatId = reader["seat_id"].ToString(),
                                     ShowId = reader["show_id"].ToString(),
                                     TicketPrice = Convert.ToDecimal(reader["ticket_price"]),
-                                    TicketStatus = reader["ticket_status"].ToString()
+                                    TicketStatus = reader["ticket_status"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
