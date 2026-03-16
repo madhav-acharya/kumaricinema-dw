@@ -7,6 +7,7 @@ namespace KumariCinema.Models
         public string ShowId { get; set; }
         public decimal TicketPrice { get; set; }
         public string TicketStatus { get; set; }
+        public System.DateTime CreatedAt { get; set; }
         public Seat Seat { get; set; }
         public MovieShow Show { get; set; }
     }
