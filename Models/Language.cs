@@ -5,5 +5,6 @@ namespace KumariCinema.Models
         public string LanguageId { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
+        public System.DateTime CreatedAt { get; set; }
     }
 }
