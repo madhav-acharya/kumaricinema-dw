@@ -18,7 +18,7 @@ namespace KumariCinema.Admin
         {
             if (Session["CurrentUser"] == null)
             {
-                Response.Redirect("~/components/Login.aspx");
+                Response.Redirect("~/pages/Login.aspx");
                 return;
             }
 
@@ -27,7 +27,7 @@ namespace KumariCinema.Admin
 
             if (!_authorizationService.IsAdminLevel(currentUser) && !_authorizationService.IsStaff(currentUser))
             {
-                Response.Redirect("~/components/Login.aspx");
+                Response.Redirect("~/pages/Login.aspx");
                 return;
             }
 
@@ -46,53 +46,77 @@ namespace KumariCinema.Admin
 
         private void LoadDropdowns(AppUser currentUser)
         {
-            _movieRepository = new MovieRepository();
-            _hallRepository = new HallRepository();
+            try
+            {
+                _movieRepository = new MovieRepository();
+                _hallRepository = new HallRepository();
 
-            var movies = _movieRepository.GetAll();
-            var halls = _authorizationService.IsSuperAdmin(currentUser)
-                ? _hallRepository.GetAll()
-                : _hallRepository.GetByTheaterId(currentUser.TheaterId);
+                var movies = _movieRepository.GetAll();
+                var halls = _authorizationService.IsSuperAdmin(currentUser)
+                    ? _hallRepository.GetAll()
+                    : _hallRepository.GetByTheaterId(currentUser.TheaterId);
 
-            movieDropdown.DataSource = movies;
-            movieDropdown.DataTextField = "Name";
-            movieDropdown.DataValueField = "MovieId";
-            movieDropdown.DataBind();
+                movieDropdown.DataSource = movies;
+                movieDropdown.DataTextField = "Name";
+                movieDropdown.DataValueField = "MovieId";
+                movieDropdown.DataBind();
 
-            editMovieDropdown.DataSource = movies;
-            editMovieDropdown.DataTextField = "Name";
-            editMovieDropdown.DataValueField = "MovieId";
-            editMovieDropdown.DataBind();
+                editMovieDropdown.DataSource = movies;
+                editMovieDropdown.DataTextField = "Name";
+                editMovieDropdown.DataValueField = "MovieId";
+                editMovieDropdown.DataBind();
 
-            hallDropdown.DataSource = halls;
-            hallDropdown.DataTextField = "HallName";
-            hallDropdown.DataValueField = "HallId";
-            hallDropdown.DataBind();
+                hallDropdown.DataSource = halls;
+                hallDropdown.DataTextField = "HallName";
+                hallDropdown.DataValueField = "HallId";
+                hallDropdown.DataBind();
 
-            editHallDropdown.DataSource = halls;
-            editHallDropdown.DataTextField = "HallName";
-            editHallDropdown.DataValueField = "HallId";
-            editHallDropdown.DataBind();
+                editHallDropdown.DataSource = halls;
+                editHallDropdown.DataTextField = "HallName";
+                editHallDropdown.DataValueField = "HallId";
+                editHallDropdown.DataBind();
+            }
+            catch (Exception ex)
+            {
+                ClientScript.RegisterStartupScript(GetType(), "loadDropErr", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
+            }
         }
 
         private void LoadShows(AppUser currentUser)
         {
-            _showRepository = new MovieShowRepository();
-            _hallRepository = new HallRepository();
+        try
+        {
+                _showRepository = new MovieShowRepository();
+                _movieRepository = new MovieRepository();
+                _hallRepository = new HallRepository();
 
-            var allShows = _showRepository.GetAll();
+                var shows = _authorizationService.IsSuperAdmin(currentUser)
+                    ? _showRepository.GetAll()
+                    : _showRepository.GetByTheaterId(currentUser.TheaterId);
 
-            if (_authorizationService.IsSuperAdmin(currentUser))
-            {
-                showsRepeater.DataSource = allShows;
+                var movieLookup = _movieRepository.GetAll().ToDictionary(m => m.MovieId, m => m.Name);
+                var hallLookup = _hallRepository.GetAll().ToDictionary(h => h.HallId, h => h.HallName);
+
+                var data = shows.Select(s => new
+                {
+                    s.ShowId,
+                    s.MovieId,
+                    MovieName = movieLookup.ContainsKey(s.MovieId) ? movieLookup[s.MovieId] : s.MovieId,
+                    s.HallId,
+                    HallName = hallLookup.ContainsKey(s.HallId) ? hallLookup[s.HallId] : s.HallId,
+                    s.StartTime,
+                    s.EndTime,
+                    s.ShowCategory,
+                    s.BaseTicketPrice
+                }).ToList();
+
+                showsRepeater.DataSource = data;
                 showsRepeater.DataBind();
-                return;
-            }
-
-            var hallIds = new HashSet<string>(_hallRepository.GetByTheaterId(currentUser.TheaterId).Select(h => h.HallId));
-            var filtered = allShows.Where(s => hallIds.Contains(s.HallId)).ToList();
-            showsRepeater.DataSource = filtered;
-            showsRepeater.DataBind();
+        }
+        catch (Exception ex)
+        {
+            ClientScript.RegisterStartupScript(GetType(), "loadShowsErr", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
+        }
         }
 
         protected void SaveShow_Click(object sender, EventArgs e)
@@ -131,7 +155,7 @@ namespace KumariCinema.Admin
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -171,7 +195,7 @@ namespace KumariCinema.Admin
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -204,7 +228,7 @@ namespace KumariCinema.Admin
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {ex.Message}', 'error');", true);
+                ClientScript.RegisterStartupScript(GetType(), "error", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -219,5 +243,7 @@ namespace KumariCinema.Admin
             var hall = _hallRepository.GetById(hallId);
             return hall != null && hall.TheaterId == currentUser.TheaterId;
         }
+
+        private string EscapeJs(string s) => s?.Replace("'", "\\'").Replace("\r", "").Replace("\n", " ") ?? "";
     }
 }
