@@ -6,5 +6,6 @@ namespace KumariCinema.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal PriceMultiplier { get; set; }
+        public System.DateTime CreatedAt { get; set; }
     }
 }
