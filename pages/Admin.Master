@@ -243,7 +243,7 @@
                 <li><a href="shows.aspx" id="showsLink"><i class="fas fa-clock"></i> Shows</a></li>
                 <li><a href="bookings.aspx" id="bookingsLink"><i class="fas fa-ticket-alt"></i> Bookings</a></li>
                 <li><a href="payments.aspx" id="paymentsLink"><i class="fas fa-credit-card"></i> Payments</a></li>
-                <li><a href="../components/logout.aspx" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                <li><a href="logout.aspx" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </div>
 
@@ -259,7 +259,7 @@
                             <li><a class="dropdown-item" href="profile.aspx">Profile</a></li>
                             <li><a class="dropdown-item" href="changepassword.aspx">Change Password</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="../components/logout.aspx">Logout</a></li>
+                            <li><a class="dropdown-item" href="logout.aspx">Logout</a></li>
                         </ul>
                     </div>
                 </div>
