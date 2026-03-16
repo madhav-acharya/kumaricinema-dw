@@ -7,6 +7,7 @@ namespace KumariCinema.Models
         public int Capacity { get; set; }
         public string ScreenType { get; set; }
         public string TheaterId { get; set; }
+        public System.DateTime CreatedAt { get; set; }
         public Theater Theater { get; set; }
     }
 }
