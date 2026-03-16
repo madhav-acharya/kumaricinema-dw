@@ -11,6 +11,7 @@ namespace KumariCinema.Models
         public DateTime EndTime { get; set; }
         public string ShowCategory { get; set; }
         public decimal BaseTicketPrice { get; set; }
+        public DateTime CreatedAt { get; set; }
         public string LanguageId { get; set; }
         public string GenreId { get; set; }
         public Movie Movie { get; set; }
