@@ -12,7 +12,7 @@ namespace KumariCinema.Admin
         {
             if (Session["CurrentUser"] == null)
             {
-                HttpContext.Current.Response.Redirect("~/components/Login.aspx");
+                HttpContext.Current.Response.Redirect("~/pages/Login.aspx");
                 return;
             }
 
