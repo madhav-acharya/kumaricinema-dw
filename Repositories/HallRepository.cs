@@ -23,7 +23,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT hall_id, hall_name, capacity, screen_type, theater_id FROM hall ORDER BY hall_name";
+                    string query = "SELECT hall_id, hall_name, capacity, screen_type, theater_id, created_at FROM hall ORDER BY hall_name";
                     using (var command = new OracleCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -36,7 +36,8 @@ namespace KumariCinema.Repositories
                                     HallName = reader["hall_name"].ToString(),
                                     Capacity = Convert.ToInt32(reader["capacity"]),
                                     ScreenType = reader["screen_type"].ToString(),
-                                    TheaterId = reader["theater_id"].ToString()
+                                    TheaterId = reader["theater_id"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
@@ -57,7 +58,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT hall_id, hall_name, capacity, screen_type, theater_id FROM hall WHERE hall_id = :id";
+                    string query = "SELECT hall_id, hall_name, capacity, screen_type, theater_id, created_at FROM hall WHERE hall_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":id", id);
@@ -71,7 +72,8 @@ namespace KumariCinema.Repositories
                                     HallName = reader["hall_name"].ToString(),
                                     Capacity = Convert.ToInt32(reader["capacity"]),
                                     ScreenType = reader["screen_type"].ToString(),
-                                    TheaterId = reader["theater_id"].ToString()
+                                    TheaterId = reader["theater_id"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 };
                             }
                         }
@@ -163,7 +165,7 @@ namespace KumariCinema.Repositories
                 using (var connection = new OracleConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT hall_id, hall_name, capacity, screen_type, theater_id FROM hall WHERE theater_id = :theaterId ORDER BY hall_name";
+                    string query = "SELECT hall_id, hall_name, capacity, screen_type, theater_id, created_at FROM hall WHERE theater_id = :theaterId ORDER BY hall_name";
                     using (var command = new OracleCommand(query, connection))
                     {
                         command.Parameters.AddWithValue(":theaterId", theaterId);
@@ -177,7 +179,8 @@ namespace KumariCinema.Repositories
                                     HallName = reader["hall_name"].ToString(),
                                     Capacity = Convert.ToInt32(reader["capacity"]),
                                     ScreenType = reader["screen_type"].ToString(),
-                                    TheaterId = reader["theater_id"].ToString()
+                                    TheaterId = reader["theater_id"].ToString(),
+                                    CreatedAt = Convert.ToDateTime(reader["created_at"])
                                 });
                             }
                         }
