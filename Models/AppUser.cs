@@ -8,6 +8,7 @@ namespace KumariCinema.Models
         public string Password { get; set; }
         public string Role { get; set; }
         public string TheaterId { get; set; }
+        public System.DateTime CreatedAt { get; set; }
         public Theater Theater { get; set; }
     }
 }
