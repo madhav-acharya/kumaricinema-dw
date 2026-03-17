@@ -63,6 +63,10 @@ namespace KumariCinema.Admin
                     LoadGenres();
                     ClientScript.RegisterStartupScript(GetType(), "success", "showToast('Added successfully', 'success');", true);
                 }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Failed to add genre', 'error');", true);
+                }
             }
             catch (Exception ex)
             {
@@ -87,6 +91,10 @@ namespace KumariCinema.Admin
                     LoadGenres();
                     ClientScript.RegisterStartupScript(GetType(), "success", "showToast('Updated successfully', 'success');", true);
                 }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Failed to update genre', 'error');", true);
+                }
             }
             catch (Exception ex)
             {
@@ -103,6 +111,10 @@ namespace KumariCinema.Admin
                 {
                     LoadGenres();
                     ClientScript.RegisterStartupScript(GetType(), "success", "showToast('Deleted successfully', 'success');", true);
+                }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Failed to delete genre', 'error');", true);
                 }
             }
             catch (Exception ex)
