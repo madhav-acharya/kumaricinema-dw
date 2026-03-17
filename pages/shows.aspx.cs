@@ -36,6 +36,10 @@ namespace KumariCinema.Admin
                 LoadDropdowns(currentUser);
                 LoadShows(currentUser);
             }
+            else
+            {
+                LoadDropdowns(currentUser);
+            }
 
             string deleteId = Request.Form["deleteShowId"];
             if (!string.IsNullOrEmpty(deleteId))
@@ -145,6 +149,7 @@ namespace KumariCinema.Admin
 
                 if (_showRepository.Insert(show))
                 {
+                    modalStateField.Value = "";
                     LoadShows(currentUser);
                     ClientScript.RegisterStartupScript(GetType(), "success", "showToast('Show added successfully', 'success');", true);
                 }
@@ -185,6 +190,7 @@ namespace KumariCinema.Admin
 
                 if (_showRepository.Update(show))
                 {
+                    modalStateField.Value = "";
                     LoadShows(currentUser);
                     ClientScript.RegisterStartupScript(GetType(), "success", "showToast('Show updated successfully', 'success');", true);
                 }
@@ -207,6 +213,7 @@ namespace KumariCinema.Admin
                 var show = _showRepository.GetById(showId);
                 if (show == null)
                 {
+                    ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Show not found', 'error');", true);
                     return;
                 }
 
@@ -214,6 +221,34 @@ namespace KumariCinema.Admin
                 {
                     ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Access denied for selected show', 'error');", true);
                     return;
+                }
+
+                var ticketRepository = new TicketRepository();
+                var bookingRepository = new BookingRepository();
+                var paymentRepository = new PaymentRepository();
+
+                var tickets = ticketRepository.GetByShowId(showId);
+                foreach (var ticket in tickets)
+                {
+                    ticketRepository.Delete(ticket.TicketId);
+                }
+
+                var bookings = bookingRepository.GetAll().Where(b => b.ShowId == showId).ToList();
+                foreach (var booking in bookings)
+                {
+                    var payments = paymentRepository.GetByBookingId(booking.BookingId);
+                    foreach (var payment in payments)
+                    {
+                        paymentRepository.Delete(payment.PaymentId);
+                    }
+
+                    var seats = bookingRepository.GetSeatsByBookingId(booking.BookingId);
+                    foreach (var seatId in seats)
+                    {
+                        bookingRepository.RemoveSeatFromBooking(booking.BookingId, seatId);
+                    }
+
+                    bookingRepository.Delete(booking.BookingId);
                 }
 
                 if (_showRepository.Delete(showId))
