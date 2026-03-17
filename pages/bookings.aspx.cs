@@ -26,6 +26,7 @@ namespace KumariCinema.Admin
 
             if (!IsPostBack)
             {
+                LoadUsers(user);
                 LoadShows(user);
                 LoadBookings(user);
             }
@@ -80,6 +81,38 @@ namespace KumariCinema.Admin
             catch (Exception ex)
             {
                 ClientScript.RegisterStartupScript(GetType(), "loadShowsErr", $"showToast('Error loading shows: {EscapeJs(ex.Message)}', 'error');", true);
+            }
+        }
+
+        private void LoadUsers(AppUser user)
+        {
+            try
+            {
+                _userRepository = new AppUserRepository();
+
+                var users = _authorizationService.IsSuperAdmin(user)
+                    ? _userRepository.GetAll()
+                    : _userRepository.GetByTheaterId(user.TheaterId);
+
+                var data = users.Select(u => new
+                {
+                    u.UserId,
+                    DisplayText = string.Format("{0} ({1})", u.Name, u.UserId)
+                }).ToList();
+
+                userDropdown.DataSource = data;
+                userDropdown.DataTextField = "DisplayText";
+                userDropdown.DataValueField = "UserId";
+                userDropdown.DataBind();
+
+                editUserDropdown.DataSource = data;
+                editUserDropdown.DataTextField = "DisplayText";
+                editUserDropdown.DataValueField = "UserId";
+                editUserDropdown.DataBind();
+            }
+            catch (Exception ex)
+            {
+                ClientScript.RegisterStartupScript(GetType(), "loadUsersErr", $"showToast('Error loading users: {EscapeJs(ex.Message)}', 'error');", true);
             }
         }
 
@@ -151,7 +184,7 @@ namespace KumariCinema.Admin
                 _bookingRepository = new BookingRepository();
                 var booking = new Booking
                 {
-                    UserId = userIdInput.Text.Trim(),
+                    UserId = userDropdown.SelectedValue,
                     ShowId = showDropdown.SelectedValue,
                     TotalAmount = decimal.TryParse(totalAmountInput.Text, out decimal amt) ? amt : 0
                 };
@@ -188,7 +221,7 @@ namespace KumariCinema.Admin
                 var booking = new Booking
                 {
                     BookingId = editBookingIdField.Value,
-                    UserId = editUserIdInput.Text.Trim(),
+                    UserId = editUserDropdown.SelectedValue,
                     ShowId = editShowDropdown.SelectedValue,
                     TotalAmount = decimal.TryParse(editTotalAmountInput.Text, out decimal amt) ? amt : 0
                 };
