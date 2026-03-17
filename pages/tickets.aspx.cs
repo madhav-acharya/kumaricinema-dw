@@ -79,7 +79,7 @@ namespace KumariCinema.Admin
         }
         catch (Exception ex)
         {
-            ClientScript.RegisterStartupScript(GetType(), "loadDropErr", $"showToast('Error: {{EscapeJs(ex.Message)}}', 'error');", true);
+            ClientScript.RegisterStartupScript(GetType(), "loadDropErr", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
         }
         }
 
@@ -181,7 +181,11 @@ namespace KumariCinema.Admin
             {
                 _ticketRepository = new TicketRepository();
                 var ticket = _ticketRepository.GetById(ticketId);
-                if (ticket == null) return;
+                if (ticket == null)
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Ticket not found', 'error');", true);
+                    return;
+                }
 
                 var allowed = new HashSet<string>(GetAllowedShowIds(user));
                 if (!_authorizationService.IsSuperAdmin(user) && !allowed.Contains(ticket.ShowId))
