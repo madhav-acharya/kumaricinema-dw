@@ -30,6 +30,10 @@ namespace KumariCinema.Admin {
                 LoadTheaters(currentUser);
                 LoadHalls(currentUser);
             }
+            else
+            {
+                LoadTheaters(currentUser);
+            }
 
             string deleteId = Request.Form["deleteHallId"];
             if (!string.IsNullOrEmpty(deleteId)) {
@@ -58,7 +62,7 @@ namespace KumariCinema.Admin {
         }
         catch (Exception ex)
         {
-            ClientScript.RegisterStartupScript(GetType(), "loadTheatersErr", $"showToast('Error: {{EscapeJs(ex.Message)}}', 'error');", true);
+            ClientScript.RegisterStartupScript(GetType(), "loadTheatersErr", $"showToast('Error: {EscapeJs(ex.Message)}', 'error');", true);
         }
         }
 
@@ -78,9 +82,6 @@ namespace KumariCinema.Admin {
 
         protected void SaveHall_Click(object sender, EventArgs e) {
             try {
-                if (!Page.IsValid)
-                    return;
-
                 var currentUser = (AppUser)Session["CurrentUser"];
                 _hallRepository = new HallRepository();
 
@@ -97,6 +98,7 @@ namespace KumariCinema.Admin {
 
                 if (_hallRepository.Insert(hall)) {
                     ClearInputs();
+                    modalStateField.Value = "";
                     LoadHalls(currentUser);
                     ClientScript.RegisterStartupScript(GetType(), "success", "showToast('Hall added successfully', 'success');", true);
                 } else {
@@ -130,6 +132,7 @@ namespace KumariCinema.Admin {
                 };
 
                 if (_hallRepository.Update(hall)) {
+                    modalStateField.Value = "";
                     LoadHalls(currentUser);
                     ClientScript.RegisterStartupScript(GetType(), "success", "showToast('Hall updated successfully', 'success');", true);
                 } else {
@@ -153,6 +156,41 @@ namespace KumariCinema.Admin {
                 if (!_authorizationService.IsSuperAdmin(currentUser) && hall.TheaterId != currentUser.TheaterId) {
                     ClientScript.RegisterStartupScript(GetType(), "error", "showToast('Access denied for this theater', 'error');", true);
                     return;
+                }
+
+                var showRepository = new MovieShowRepository();
+                var ticketRepository = new TicketRepository();
+                var bookingRepository = new BookingRepository();
+                var paymentRepository = new PaymentRepository();
+
+                var shows = showRepository.GetByHallId(hallId);
+                foreach (var show in shows)
+                {
+                    var tickets = ticketRepository.GetByShowId(show.ShowId);
+                    foreach (var ticket in tickets)
+                    {
+                        ticketRepository.Delete(ticket.TicketId);
+                    }
+
+                    var bookings = bookingRepository.GetAll().Where(b => b.ShowId == show.ShowId).ToList();
+                    foreach (var booking in bookings)
+                    {
+                        var payments = paymentRepository.GetByBookingId(booking.BookingId);
+                        foreach (var payment in payments)
+                        {
+                            paymentRepository.Delete(payment.PaymentId);
+                        }
+
+                        var seats = bookingRepository.GetSeatsByBookingId(booking.BookingId);
+                        foreach (var seatId in seats)
+                        {
+                            bookingRepository.RemoveSeatFromBooking(booking.BookingId, seatId);
+                        }
+
+                        bookingRepository.Delete(booking.BookingId);
+                    }
+
+                    showRepository.Delete(show.ShowId);
                 }
 
                 if (_hallRepository.Delete(hallId)) {
