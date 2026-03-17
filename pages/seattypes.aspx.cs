@@ -54,8 +54,13 @@ namespace KumariCinema.Admin
                 }))
                 {
                     idInput.Text = nameInput.Text = descInput.Text = priceInput.Text = "";
+                    modalStateField.Value = "";
                     Load();
-                    ClientScript.RegisterStartupScript(GetType(), "s", "showToast('Added', 'success');", true);
+                    ClientScript.RegisterStartupScript(GetType(), "s", "showToast('Seat type added successfully', 'success');", true);
+                }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "e", "showToast('Failed to add seat type', 'error');", true);
                 }
             }
             catch (Exception ex)
@@ -77,8 +82,13 @@ namespace KumariCinema.Admin
                     PriceMultiplier = decimal.Parse(editPriceInput.Text)
                 }))
                 {
+                    modalStateField.Value = "";
                     Load();
-                    ClientScript.RegisterStartupScript(GetType(), "s", "showToast('Updated', 'success');", true);
+                    ClientScript.RegisterStartupScript(GetType(), "s", "showToast('Seat type updated successfully', 'success');", true);
+                }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "e", "showToast('Failed to update seat type', 'error');", true);
                 }
             }
             catch (Exception ex)
@@ -95,7 +105,11 @@ namespace KumariCinema.Admin
                 if (_repo.Delete(id))
                 {
                     Load();
-                    ClientScript.RegisterStartupScript(GetType(), "s", "showToast('Deleted', 'success');", true);
+                    ClientScript.RegisterStartupScript(GetType(), "s", "showToast('Seat type deleted successfully', 'success');", true);
+                }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "e", "showToast('Failed to delete seat type', 'error');", true);
                 }
             }
             catch (Exception ex)
