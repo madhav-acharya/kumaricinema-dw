@@ -2,6 +2,7 @@ using KumariCinema.Models;
 using KumariCinema.Repositories;
 using KumariCinema.Services;
 using System;
+using System.Linq;
 
 namespace KumariCinema.Admin
 {
@@ -22,6 +23,10 @@ namespace KumariCinema.Admin
             {
                 LoadSeatTypes();
                 LoadSeats();
+            }
+            else
+            {
+                LoadSeatTypes();
             }
 
             string deleteId = Request.Form["deleteSeatId"];
@@ -82,6 +87,7 @@ namespace KumariCinema.Admin
 
                 if (_seatRepository.Insert(seat))
                 {
+                    modalStateField.Value = "";
                     LoadSeats();
                     ClientScript.RegisterStartupScript(GetType(), "saveOk", "showToast('Seat added successfully', 'success');", true);
                 }
@@ -111,6 +117,7 @@ namespace KumariCinema.Admin
 
                 if (_seatRepository.Update(seat))
                 {
+                    modalStateField.Value = "";
                     LoadSeats();
                     ClientScript.RegisterStartupScript(GetType(), "updateOk", "showToast('Seat updated successfully', 'success');", true);
                 }
@@ -130,6 +137,26 @@ namespace KumariCinema.Admin
             try
             {
                 _seatRepository = new SeatRepository();
+
+                var ticketRepository = new TicketRepository();
+                var bookingRepository = new BookingRepository();
+
+                var tickets = ticketRepository.GetAll().Where(t => t.SeatId == seatId).ToList();
+                foreach (var ticket in tickets)
+                {
+                    ticketRepository.Delete(ticket.TicketId);
+                }
+
+                var bookings = bookingRepository.GetAll();
+                foreach (var booking in bookings)
+                {
+                    var bookingSeats = bookingRepository.GetSeatsByBookingId(booking.BookingId);
+                    if (bookingSeats.Contains(seatId))
+                    {
+                        bookingRepository.RemoveSeatFromBooking(booking.BookingId, seatId);
+                    }
+                }
+
                 if (_seatRepository.Delete(seatId))
                 {
                     LoadSeats();
