@@ -52,6 +52,10 @@ namespace KumariCinema.Admin
                     Load();
                     ClientScript.RegisterStartupScript(GetType(), "s", "showToast('Added', 'success');", true);
                 }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "e", "showToast('Failed to add language', 'error');", true);
+                }
             }
             catch (Exception ex)
             {
@@ -69,6 +73,10 @@ namespace KumariCinema.Admin
                     Load();
                     ClientScript.RegisterStartupScript(GetType(), "s", "showToast('Updated', 'success');", true);
                 }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "e", "showToast('Failed to update language', 'error');", true);
+                }
             }
             catch (Exception ex)
             {
@@ -81,7 +89,15 @@ namespace KumariCinema.Admin
             try
             {
                 _repo = new LanguageRepository();
-                if (_repo.Delete(id)) { Load(); ClientScript.RegisterStartupScript(GetType(), "s", "showToast('Deleted', 'success');", true); }
+                if (_repo.Delete(id))
+                {
+                    Load();
+                    ClientScript.RegisterStartupScript(GetType(), "s", "showToast('Deleted', 'success');", true);
+                }
+                else
+                {
+                    ClientScript.RegisterStartupScript(GetType(), "e", "showToast('Failed to delete language', 'error');", true);
+                }
             }
             catch (Exception ex)
             {
