@@ -63,7 +63,7 @@ namespace KumariCinema.Admin
                     if(link.getAttribute('data-locked')==='1') return;
                     link.setAttribute('data-locked','1');
                     link.style.opacity='0.65';
-                    link.insertAdjacentHTML('beforeend',' <i class=\""fas fa-lock\""></i>');
+                    link.insertAdjacentHTML('beforeend',' <i class=""fas fa-lock""></i>');
                     link.addEventListener('click', function(e){
                         e.preventDefault();
                         if(typeof showToast === 'function'){
