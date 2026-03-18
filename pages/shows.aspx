@@ -9,8 +9,19 @@
         </button>
     </div>
     <div class="card mb-3">
-        <div class="card-body">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search shows..." />
+        <div class="card-body row g-2">
+            <div class="col-md-8">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search shows..." />
+            </div>
+            <div class="col-md-4">
+                <select id="filterDropdown" class="form-select">
+                    <option value="">All Categories</option>
+                    <option value="morning">Morning</option>
+                    <option value="afternoon">Afternoon</option>
+                    <option value="evening">Evening</option>
+                    <option value="night">Night</option>
+                </select>
+            </div>
         </div>
     </div>
     <div class="card">
@@ -182,7 +193,7 @@
                 deleteField.name = 'deleteShowId';
                 deleteField.value = showId;
                 form.appendChild(deleteField);
-                setTimeout(() => form.submit(), 100);
+                form.submit();
             });
         }
 
@@ -202,12 +213,23 @@
         });
 
         document.getElementById('searchInput').addEventListener('keyup', function () {
-            const searchValue = this.value.toLowerCase();
+            applyFilter();
+        });
+        document.getElementById('filterDropdown').addEventListener('change', function () {
+            applyFilter();
+        });
+
+        function applyFilter() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('filterDropdown').value.toLowerCase();
             document.querySelectorAll('table tbody tr').forEach(row => {
                 const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchValue) ? '' : 'none';
+                const rowCategory = row.children[5] ? row.children[5].textContent.toLowerCase().trim() : '';
+                const matchesSearch = text.includes(searchValue);
+                const matchesCategory = category === '' || rowCategory === category;
+                row.style.display = matchesSearch && matchesCategory ? '' : 'none';
             });
-        });
+        }
 
         setActiveLink('showsLink');
     </script>
