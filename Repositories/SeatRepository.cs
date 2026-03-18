@@ -26,6 +26,7 @@ namespace KumariCinema.Repositories
                     string query = "SELECT seat_id, seat_number, status, seat_type_id, created_at FROM seat ORDER BY seat_number";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -60,6 +61,7 @@ namespace KumariCinema.Repositories
                     string query = "SELECT seat_id, seat_number, status, seat_type_id, created_at FROM seat WHERE seat_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":id", id);
                         using (var reader = command.ExecuteReader())
                         {
@@ -95,6 +97,7 @@ namespace KumariCinema.Repositories
                     string query = "INSERT INTO seat (seat_number, status, seat_type_id) VALUES (:number, :status, :seatTypeId)";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":number", entity.SeatNumber);
                         command.Parameters.AddWithValue(":status", entity.Status);
                         command.Parameters.AddWithValue(":seatTypeId", entity.SeatTypeId);
@@ -118,6 +121,7 @@ namespace KumariCinema.Repositories
                     string query = "UPDATE seat SET seat_number = :number, status = :status, seat_type_id = :seatTypeId WHERE seat_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":id", entity.SeatId);
                         command.Parameters.AddWithValue(":number", entity.SeatNumber);
                         command.Parameters.AddWithValue(":status", entity.Status);
@@ -142,6 +146,7 @@ namespace KumariCinema.Repositories
                     string query = "DELETE FROM seat WHERE seat_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":id", id);
                         return command.ExecuteNonQuery() > 0;
                     }
