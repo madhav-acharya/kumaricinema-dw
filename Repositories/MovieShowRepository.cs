@@ -26,6 +26,7 @@ namespace KumariCinema.Repositories
                     string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, created_at FROM movie_show ORDER BY start_time DESC";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -65,6 +66,7 @@ namespace KumariCinema.Repositories
                     string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, created_at FROM movie_show WHERE show_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":id", id);
                         using (var reader = command.ExecuteReader())
                         {
@@ -105,6 +107,7 @@ namespace KumariCinema.Repositories
                     string query = "INSERT INTO movie_show (movie_id, hall_id, start_time, end_time, show_category, base_ticket_price) VALUES (:movieId, :hallId, :startTime, :endTime, :category, :price)";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":movieId", entity.MovieId);
                         command.Parameters.AddWithValue(":hallId", entity.HallId);
                         command.Parameters.AddWithValue(":startTime", entity.StartTime);
@@ -131,6 +134,7 @@ namespace KumariCinema.Repositories
                     string query = "UPDATE movie_show SET movie_id = :movieId, hall_id = :hallId, start_time = :startTime, end_time = :endTime, show_category = :category, base_ticket_price = :price WHERE show_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":id", entity.ShowId);
                         command.Parameters.AddWithValue(":movieId", entity.MovieId);
                         command.Parameters.AddWithValue(":hallId", entity.HallId);
@@ -158,6 +162,7 @@ namespace KumariCinema.Repositories
                     string query = "DELETE FROM movie_show WHERE show_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":id", id);
                         return command.ExecuteNonQuery() > 0;
                     }
@@ -180,6 +185,7 @@ namespace KumariCinema.Repositories
                     string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, created_at FROM movie_show WHERE movie_id = :movieId ORDER BY start_time";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":movieId", movieId);
                         using (var reader = command.ExecuteReader())
                         {
@@ -221,6 +227,7 @@ namespace KumariCinema.Repositories
                     string query = "SELECT show_id, movie_id, hall_id, start_time, end_time, show_category, base_ticket_price, created_at FROM movie_show WHERE hall_id = :hallId ORDER BY start_time";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":hallId", hallId);
                         using (var reader = command.ExecuteReader())
                         {
@@ -262,6 +269,7 @@ namespace KumariCinema.Repositories
                     string query = "SELECT ms.show_id, ms.movie_id, ms.hall_id, ms.start_time, ms.end_time, ms.show_category, ms.base_ticket_price, ms.created_at FROM movie_show ms INNER JOIN hall h ON ms.hall_id = h.hall_id WHERE h.theater_id = :theaterId ORDER BY ms.start_time DESC";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":theaterId", theaterId);
                         using (var reader = command.ExecuteReader())
                         {
