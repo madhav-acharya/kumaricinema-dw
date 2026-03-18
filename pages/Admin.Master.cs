@@ -48,6 +48,12 @@ namespace KumariCinema.Admin
             }
             if (!auth.CanViewBookings(user, user.TheaterId)) lockedLinks.Add("bookingsLink");
             if (!auth.CanManagePayments(user, user.TheaterId)) lockedLinks.Add("paymentsLink");
+            if (!auth.CanViewBookings(user, user.TheaterId))
+            {
+                lockedLinks.Add("userTicketsReportLink");
+                lockedLinks.Add("theaterCityHallMovieReportLink");
+                lockedLinks.Add("occupancyPerformerReportLink");
+            }
 
             if (lockedLinks.Count == 0)
             {
