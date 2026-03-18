@@ -30,10 +30,6 @@ namespace KumariCinema.Admin {
                 LoadTheaters(currentUser);
                 LoadHalls(currentUser);
             }
-            else
-            {
-                LoadTheaters(currentUser);
-            }
 
             string deleteId = Request.Form["deleteHallId"];
             if (!string.IsNullOrEmpty(deleteId)) {
