@@ -9,8 +9,18 @@
         </button>
     </div>
     <div class="card mb-3">
-        <div class="card-body">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search seats..." />
+        <div class="card-body row g-2">
+            <div class="col-md-8">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search seats..." />
+            </div>
+            <div class="col-md-4">
+                <select id="filterDropdown" class="form-select">
+                    <option value="">All Statuses</option>
+                    <option value="available">Available</option>
+                    <option value="reserved">Reserved</option>
+                    <option value="blocked">Blocked</option>
+                </select>
+            </div>
         </div>
     </div>
     <div class="card">
@@ -148,7 +158,7 @@
                 f.name = 'deleteSeatId';
                 f.value = id;
                 form.appendChild(f);
-                setTimeout(() => form.submit(), 100);
+                form.submit();
             });
         }
 
@@ -168,9 +178,23 @@
         });
 
         document.getElementById('searchInput').addEventListener('keyup', function () {
-            const v = this.value.toLowerCase();
-            document.querySelectorAll('table tbody tr').forEach(r => r.style.display = r.textContent.toLowerCase().includes(v) ? '' : 'none');
+            applyFilter();
         });
+        document.getElementById('filterDropdown').addEventListener('change', function () {
+            applyFilter();
+        });
+
+        function applyFilter() {
+            const v = document.getElementById('searchInput').value.toLowerCase();
+            const status = document.getElementById('filterDropdown').value.toLowerCase();
+            document.querySelectorAll('table tbody tr').forEach(r => {
+                const text = r.textContent.toLowerCase();
+                const rowStatus = r.children[2] ? r.children[2].textContent.toLowerCase().trim() : '';
+                const matchesSearch = text.includes(v);
+                const matchesStatus = status === '' || rowStatus === status;
+                r.style.display = matchesSearch && matchesStatus ? '' : 'none';
+            });
+        }
 
         setActiveLink('seatsLink');
     </script>
