@@ -36,10 +36,6 @@ namespace KumariCinema.Admin
                 LoadDropdowns(currentUser);
                 LoadShows(currentUser);
             }
-            else
-            {
-                LoadDropdowns(currentUser);
-            }
 
             string deleteId = Request.Form["deleteShowId"];
             if (!string.IsNullOrEmpty(deleteId))
