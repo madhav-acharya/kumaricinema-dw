@@ -202,6 +202,10 @@
             color: #0c5460;
         }
 
+        .modal-validation-summary {
+            border-radius: 6px;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 200px;
@@ -243,6 +247,9 @@
                 <li><a href="shows.aspx" id="showsLink"><i class="fas fa-clock"></i> Shows</a></li>
                 <li><a href="bookings.aspx" id="bookingsLink"><i class="fas fa-ticket-alt"></i> Bookings</a></li>
                 <li><a href="payments.aspx" id="paymentsLink"><i class="fas fa-credit-card"></i> Payments</a></li>
+                <li><a href="usertickets.aspx" id="userTicketsReportLink"><i class="fas fa-receipt"></i> User Ticket Report</a></li>
+                <li><a href="theatercityhallmovies.aspx" id="theaterCityHallMovieReportLink"><i class="fas fa-city"></i> Theater City Hall Movie</a></li>
+                <li><a href="movietheatercityhalloccupancyperformer.aspx" id="occupancyPerformerReportLink"><i class="fas fa-chart-bar"></i> Occupancy Performer</a></li>
                 <li><a href="logout.aspx" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </div>
@@ -343,6 +350,86 @@
             const link = document.getElementById(linkId);
             if (link) link.classList.add('active');
         }
+
+        function clearModalValidation(modal) {
+            if (!modal) return;
+            const summary = modal.querySelector('.modal-validation-summary');
+            if (summary) summary.remove();
+            modal.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        }
+
+        function getFieldLabel(field) {
+            const wrapper = field.closest('.mb-3') || field.parentElement;
+            if (!wrapper) return field.name || field.id || 'Field';
+            const label = wrapper.querySelector('label');
+            return label ? label.textContent.trim() : (field.name || field.id || 'Field');
+        }
+
+        function validateModalForm(modal) {
+            if (!modal) return true;
+            clearModalValidation(modal);
+
+            const fields = Array.from(modal.querySelectorAll('.modal-body input.form-control, .modal-body select.form-select'))
+                .filter(field => {
+                    if (!field) return false;
+                    if (field.type === 'hidden') return false;
+                    if (field.disabled || field.readOnly) return false;
+                    if (field.closest('[style*="display:none"]')) return false;
+                    return field.offsetParent !== null;
+                });
+
+            const missing = [];
+            fields.forEach(field => {
+                const value = (field.value || '').trim();
+                if (!value) {
+                    field.classList.add('is-invalid');
+                    missing.push(getFieldLabel(field));
+                }
+            });
+
+            if (missing.length === 0) return true;
+
+            const uniqueMissing = Array.from(new Set(missing));
+            const summary = document.createElement('div');
+            summary.className = 'alert alert-danger modal-validation-summary mb-3';
+            summary.innerHTML = '<strong>Please fill the required fields:</strong><ul class="mb-0 mt-2">' + uniqueMissing.map(m => '<li>' + m + '</li>').join('') + '</ul>';
+
+            const modalBody = modal.querySelector('.modal-body');
+            if (modalBody) {
+                modalBody.insertBefore(summary, modalBody.firstChild);
+            }
+
+            const firstInvalid = modal.querySelector('.is-invalid');
+            if (firstInvalid) firstInvalid.focus();
+
+            return false;
+        }
+
+        document.addEventListener('click', function (e) {
+            const button = e.target.closest('.modal .btn-primary-custom');
+            if (!button) return;
+            const modal = button.closest('.modal');
+            if (!modal) return;
+
+            const isValid = validateModalForm(modal);
+            if (!isValid) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+
+        document.addEventListener('input', function (e) {
+            const field = e.target;
+            if (!(field.matches('.modal-body input.form-control') || field.matches('.modal-body select.form-select'))) return;
+            if ((field.value || '').trim()) {
+                field.classList.remove('is-invalid');
+                const modal = field.closest('.modal');
+                const summary = modal ? modal.querySelector('.modal-validation-summary') : null;
+                if (summary && modal.querySelectorAll('.is-invalid').length === 0) {
+                    summary.remove();
+                }
+            }
+        });
     </script>
     <asp:ContentPlaceHolder ID="scripts" runat="server"></asp:ContentPlaceHolder>
 </body>
