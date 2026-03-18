@@ -7,8 +7,18 @@
     </button>
   </div>
   <div class="card mb-3">
-    <div class="card-body">
-      <input type="text" id="searchInput" class="form-control" placeholder="Search tickets..." />
+    <div class="card-body row g-2">
+      <div class="col-md-8">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search tickets..." />
+      </div>
+      <div class="col-md-4">
+        <select id="filterDropdown" class="form-select">
+          <option value="">All Statuses</option>
+          <option value="booked">Booked</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="used">Used</option>
+        </select>
+      </div>
     </div>
   </div>
   <div class="card">
@@ -144,12 +154,23 @@
       });
     }
     document.getElementById('searchInput').addEventListener('keyup', function () {
-      const searchValue = this.value.toLowerCase();
+      applyFilter();
+    });
+    document.getElementById('filterDropdown').addEventListener('change', function () {
+      applyFilter();
+    });
+
+    function applyFilter() {
+      const searchValue = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('filterDropdown').value.toLowerCase();
       document.querySelectorAll('table tbody tr').forEach(row => {
         const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchValue) ? '' : 'none';
+        const rowStatus = row.children[4] ? row.children[4].textContent.toLowerCase().trim() : '';
+        const matchesSearch = text.includes(searchValue);
+        const matchesStatus = status === '' || rowStatus === status;
+        row.style.display = matchesSearch && matchesStatus ? '' : 'none';
       });
-    });
+    }
     setActiveLink('ticketsLink');
   </script>
 </asp:Content>
