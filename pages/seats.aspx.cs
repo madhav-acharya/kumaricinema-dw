@@ -24,10 +24,6 @@ namespace KumariCinema.Admin
                 LoadSeatTypes();
                 LoadSeats();
             }
-            else
-            {
-                LoadSeatTypes();
-            }
 
             string deleteId = Request.Form["deleteSeatId"];
             if (!string.IsNullOrEmpty(deleteId))
