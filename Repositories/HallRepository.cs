@@ -26,6 +26,7 @@ namespace KumariCinema.Repositories
                     string query = "SELECT hall_id, hall_name, capacity, screen_type, theater_id, created_at FROM hall ORDER BY hall_name";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -61,6 +62,7 @@ namespace KumariCinema.Repositories
                     string query = "SELECT hall_id, hall_name, capacity, screen_type, theater_id, created_at FROM hall WHERE hall_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":id", id);
                         using (var reader = command.ExecuteReader())
                         {
@@ -97,6 +99,7 @@ namespace KumariCinema.Repositories
                     string query = "INSERT INTO hall (hall_name, capacity, screen_type, theater_id) VALUES (:name, :capacity, :screenType, :theaterId)";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":name", entity.HallName);
                         command.Parameters.AddWithValue(":capacity", entity.Capacity);
                         command.Parameters.AddWithValue(":screenType", entity.ScreenType);
@@ -121,6 +124,7 @@ namespace KumariCinema.Repositories
                     string query = "UPDATE hall SET hall_name = :name, capacity = :capacity, screen_type = :screenType, theater_id = :theaterId WHERE hall_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":id", entity.HallId);
                         command.Parameters.AddWithValue(":name", entity.HallName);
                         command.Parameters.AddWithValue(":capacity", entity.Capacity);
@@ -146,6 +150,7 @@ namespace KumariCinema.Repositories
                     string query = "DELETE FROM hall WHERE hall_id = :id";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":id", id);
                         return command.ExecuteNonQuery() > 0;
                     }
@@ -168,6 +173,7 @@ namespace KumariCinema.Repositories
                     string query = "SELECT hall_id, hall_name, capacity, screen_type, theater_id, created_at FROM hall WHERE theater_id = :theaterId ORDER BY hall_name";
                     using (var command = new OracleCommand(query, connection))
                     {
+                        command.BindByName = true;
                         command.Parameters.AddWithValue(":theaterId", theaterId);
                         using (var reader = command.ExecuteReader())
                         {
