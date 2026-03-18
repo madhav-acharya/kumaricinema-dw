@@ -7,8 +7,19 @@
         </button>
     </div>
     <div class="card mb-3">
-        <div class="card-body">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search users..." />
+        <div class="card-body row g-2">
+            <div class="col-md-8">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search users..." />
+            </div>
+            <div class="col-md-4">
+                <select id="filterDropdown" class="form-select">
+                    <option value="">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="owner">Owner</option>
+                    <option value="staff">Staff</option>
+                    <option value="customer">Customer</option>
+                </select>
+            </div>
         </div>
     </div>
     <div class="card">
@@ -88,11 +99,23 @@
             });
         }
         document.getElementById('searchInput').addEventListener('keyup', function () {
-            const val = this.value.toLowerCase();
-            document.querySelectorAll('table tbody tr').forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
-            });
+            applyFilter();
         });
+        document.getElementById('filterDropdown').addEventListener('change', function () {
+            applyFilter();
+        });
+
+        function applyFilter() {
+            const val = document.getElementById('searchInput').value.toLowerCase();
+            const role = document.getElementById('filterDropdown').value.toLowerCase();
+            document.querySelectorAll('table tbody tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const rowRole = row.children[3] ? row.children[3].textContent.toLowerCase().trim() : '';
+                const matchesSearch = text.includes(val);
+                const matchesRole = role === '' || rowRole === role;
+                row.style.display = matchesSearch && matchesRole ? '' : 'none';
+            });
+        }
         setActiveLink('usersLink');
     </script>
 </asp:Content>
