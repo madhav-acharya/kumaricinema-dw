@@ -9,8 +9,19 @@
         </button>
     </div>
     <div class="card mb-3">
-        <div class="card-body">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search halls..." />
+        <div class="card-body row g-2">
+            <div class="col-md-8">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search halls..." />
+            </div>
+            <div class="col-md-4">
+                <select id="filterDropdown" class="form-select">
+                    <option value="">All Screen Types</option>
+                    <option value="2d">2D</option>
+                    <option value="3d">3D</option>
+                    <option value="imax">IMAX</option>
+                    <option value="4dx">4DX</option>
+                </select>
+            </div>
         </div>
     </div>
     <div class="card">
@@ -166,7 +177,7 @@
                 deleteField.name = 'deleteHallId';
                 deleteField.value = hallId;
                 form.appendChild(deleteField);
-                setTimeout(() => form.submit(), 100);
+                form.submit();
             });
         }
 
@@ -186,12 +197,23 @@
         });
 
         document.getElementById('searchInput').addEventListener('keyup', function () {
-            const searchValue = this.value.toLowerCase();
+            applyFilter();
+        });
+        document.getElementById('filterDropdown').addEventListener('change', function () {
+            applyFilter();
+        });
+
+        function applyFilter() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const screenType = document.getElementById('filterDropdown').value.toLowerCase();
             document.querySelectorAll('table tbody tr').forEach(row => {
                 const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchValue) ? '' : 'none';
+                const rowScreen = row.children[3] ? row.children[3].textContent.toLowerCase().trim() : '';
+                const matchesSearch = text.includes(searchValue);
+                const matchesScreen = screenType === '' || rowScreen === screenType;
+                row.style.display = matchesSearch && matchesScreen ? '' : 'none';
             });
-        });
+        }
 
         setActiveLink('hallsLink');
     </script>
