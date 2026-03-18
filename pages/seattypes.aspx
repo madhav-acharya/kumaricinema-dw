@@ -131,7 +131,7 @@
                 d.name = 'delId';
                 d.value = id;
                 f.appendChild(d);
-                setTimeout(() => f.submit(), 100);
+                f.submit();
             });
         }
 
